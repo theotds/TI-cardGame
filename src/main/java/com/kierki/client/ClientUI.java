@@ -17,13 +17,13 @@ import java.util.Optional;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-// TODO - SERVER-CLIENT, GAME UI, JOIN ROOM, PLAYER
+// TODO - SERVER-CLIENT, GAME UI, JOIN ROOM, PLAYER, JOIN AFTER CREATE
 
 public class ClientUI extends Application {
     private Stage window;
-    private RoomManager roomManager = new RoomManager();
+    private final RoomManager roomManager = new RoomManager();
     private ListView<String> roomList;
-    private AuthenticationModule authentication = new AuthenticationModule();
+    private final AuthenticationModule authentication = new AuthenticationModule();
     private Player player;
     private GameClient client;
 
@@ -221,6 +221,9 @@ public class ClientUI extends Application {
                 if (parts.length == 2 && parts[0].equals("ROOM")) {
                     String roomDetails = parts[1];
                     // Add this room to the UI list
+                    if(!roomManager.doesRoomExist(roomDetails)){
+                        RoomManager.createRoom(roomDetails);
+                    }
                     addRoomToList(roomDetails);
                 }
             }
