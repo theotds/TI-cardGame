@@ -1,0 +1,51 @@
+Gra dla 4 osób z użyciem pełnej talii (od 2 do asa).
+
+Pełna rozgrywka składa się z 11 rozdań.
+
+W każdym rozdaniu jeden z graczy jest rozdającym karty. W pierwszym rozdaniu jest nim losowo wybrany gracz; w każdym następnym -- osoba siedząca po lewej stronie gracza ostatnio rozdającego.
+
+Karty są rozdzielane po równo między wszystkich graczy;
+
+Jako pierwsza kartę wykłada osoba siedząca po lewej stronie rozdającego, po czym karty wykładają zgodnie z ruchem wskazówek zegara pozostali gracze. Istnieje obowiązek dokładania kart do koloru; jeśli gracz nie ma kart w wymaganym kolorze, może rzucać w dowolnym.
+
+Komplet czterech kart (lub trzech przy grze w trójkę) to lewa. Gracz, który wyłożył najstarszą kartę w kolorze karty wyjściowej, bierze lewę i wychodzi jako pierwszy do następnej.
+
+Starszeństwo kart (od najsłabszej): 2, 3, 4, ..., 9, 10, walet, dama, król, as.
+
+W grze nie ma obowiązku przebijania kartą starszą.
+
+W kolejnych rozdaniach chodzi o unikanie brania określonych lew, za które zdobywa się punkty ujemne.
+
+    rozdanie 1. -- bez lew; -20 pkt. za każdą wziętą lewę
+    rozdanie 2. -- bez kierów; -20 pkt. za każdego wziętego kiera
+    rozdanie 3. -- bez dam; -60 pkt. za każdą wziętą damę
+    rozdanie 4. -- bez panów; -30 pkt. za każdego wziętego króla lub waleta
+    rozdanie 5. -- bez króla kier, -150 za jego wzięcie
+    rozdanie 6. -- bez siódmej i ostatniej lewy, po -75 pkt. za każdą z nich
+    rozdanie 7. (tzw. rozbójnik) -- wszystkie ograniczenia z rozdań 1-6.
+
+W rozdaniach 2., 5. i 7. nie można wychodzić w kiery, jeśli ma się inny kolor.
+
+W grze w trzy osoby obowiązuje nieznacznie zmieniona punktacja: -15 pkt. za lewę (rozdanie 1. i 7.), -140 pkt. za króla kier (rozdanie 5. i 7.), -70 pkt. za siódmą i ostatnią lewę (rozdanie 6. i 7.).
+
+ODGRYWKA
+
+Po siedmiu rozdaniach, w których zdobywa się tylko punkty ujemne, następuje tzw. odgrywka, która pozwala na zdobycie punktów dodatnich. Odgrywka składa się z rozgrywki atutowej oraz tzw. loteryjki.
+
+Rozgrywka atutowa składa się z tylu rozdań, ilu jest graczy. W każdym z nich rozdający określa na podstawie pierwszych pięciu (w grze w trzy osoby sześciu) rozdanych kart, jaki kolor atutowy będzie obowiązywał w danym rozdaniu. Istnieje obowiązek dokładania kart do koloru, nie ma jednak obowiązku przebijania atutem w przypadku braku kart w kolorze wyjścia.
+
+Gracze otrzymują po +25 pkt. za każdą wziętą lewę (w grze w trzy osoby +20 pkt.)
+
+Loteryjka składa się z jednego rozdania, w którym celem graczy jest jak najszybsze pozbycie się kart z ręki.
+
+Jako pierwszy (dowolną) kartę wykłada rozdający, po nim gracze dokładają po jednej karcie kolejno, zgodnie z ruchem wskazówek zegara. Dokładać można albo kartę o tej samej wartości, co pierwsza wyłożona karta, albo kartę w jednym z wyłożonych juz kolorów o wartości o jeden większej niż największa wyłożona karta w danym kolorze bądź o wartości o jeden mniejszej niż najniższa (w danym kolorze). Jeśli gracz nie może dołożyć karty w żaden sposób, traci kolejkę; jeśli może dołożyć, musi to zrobić (pasowanie nie jest dozwolone).
+
+Karty układane są kolorami w czterech kolumnach w ten sposób, że najniższa karta znajduje się na samym dole, a najwyższa -- na samej górze.
+
+Punkty za loteryjkę: gracz który pierwszy pozbył się kart +800 pkt., gracz, który pozbył się jako drugi +500 pkt. (w grze w trzech graczy liczby te wynoszą odpowiednio +790 i +485).
+
+Gracz, który zdobędzie największą liczbę punktów, wygrywa (jeśli największą liczbę zdobędzie dwóch lub więcej graczy, następuje remis).
+
+zasady są z kurnika :3
+
+https://www.kurnik.pl/kierki/zasady.phtml
