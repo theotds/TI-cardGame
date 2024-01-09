@@ -70,7 +70,9 @@ public class Server {
             if (action.equals("CREATE_ROOM")) {
                 addRoom(details, clientSocket);
             }
-
+        }
+        if (message.equals("GET_ROOM_LIST")) {
+            sendRoomsList();
         }
     }
 

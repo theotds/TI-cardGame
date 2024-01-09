@@ -77,6 +77,7 @@ public class ClientUI extends Application {
             try {
                 this.client = new GameClient(12345);
                 player = new Player(username);
+                requestRoomList();
                 window.setScene(buildRoomSelectionScene());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -85,6 +86,14 @@ public class ClientUI extends Application {
             }
         }
         return logged;
+    }
+
+    private void requestRoomList() throws IOException {
+        if (this.client != null) {
+            // Send a message to the server to request the current list of rooms
+            // The format of this message depends on your server's protocol
+            this.client.sendMessage("GET_ROOM_LIST");
+        }
     }
 
     private Scene buildRegisterScene() {
