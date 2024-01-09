@@ -14,9 +14,9 @@ public class ServerCommunication {
 
     public boolean connectToServer(String host, int port) {
         try {
-            socket = new Socket(host, port);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.socket = new Socket(host, port);
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             return true;
         } catch (IOException e) {
             System.out.println("Could not connect to server: " + e.getMessage());
@@ -24,11 +24,13 @@ public class ServerCommunication {
         }
     }
 
-    public void handleMessage(String message) {
+    public void handleMessage(String message, PrintWriter out) {
         if (isCreateRoomRequest(message)) {
             String roomId = extractRoomIdFromMessage(message);
             RoomManager.createRoom(roomId); // Directly calling the static method
             RoomManager.displayAllRooms();
+        }else if (message.equals("GET_ROOM_LIST")) {
+            sendRoomList(this.out);
         }
         // Handle other message types as needed
     }
@@ -46,6 +48,22 @@ public class ServerCommunication {
         if (out != null) {
             out.println(message);
         }
+    }
+
+    // Method to send the list of rooms to the client
+    public void sendRoomList(PrintWriter out) {
+        Map<String, GameRoom> rooms = RoomManager.getActiveRooms();
+        // Construct a message containing the list of rooms
+        StringBuilder roomListMsg = new StringBuilder("ROOM_LIST ");
+        for (String roomId : rooms.keySet()) {
+            roomListMsg.append(roomId).append(", ");
+        }
+        // Remove the last comma and space
+        if (roomListMsg.length() > 0) {
+            roomListMsg.setLength(roomListMsg.length() - 2);
+        }
+        // Send the message to the client
+        out.println(roomListMsg.toString());
     }
 
     // Method to close the connection

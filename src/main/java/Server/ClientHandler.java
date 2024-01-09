@@ -28,7 +28,7 @@ class ClientHandler implements Runnable {
             String clientMessage;
             while ((clientMessage = in.readLine()) != null) {
                 // Assuming ServerCommunication is a class with static methods
-                serverCommunication.handleMessage(clientMessage);
+                serverCommunication.handleMessage(clientMessage,out);
             }
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port or listening for a connection");
