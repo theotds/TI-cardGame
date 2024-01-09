@@ -3,6 +3,7 @@ package com.kierki.client;
 import Rooms.GameRoom;
 import Rooms.RoomManager;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,12 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Optional;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -27,11 +25,18 @@ public class ClientUI extends Application {
     private ListView<String> roomList;
     private AuthenticationModule authentication = new AuthenticationModule();
     private Player player;
-    private ServerCommunication serverComm;
+    private GameClient client;
+
+    private static ClientUI instance;
+
+    public static ClientUI getInstance() {
+        return instance;
+    }
 
 
     @Override
     public void start(Stage primaryStage) {
+        instance = this;
         window = primaryStage;
         window.setTitle("Gra Kierki - Klient");
 
@@ -70,15 +75,9 @@ public class ClientUI extends Application {
         boolean logged = authentication.loginUser(username, password);
         if (logged) {
             try {
-                serverComm = new ServerCommunication();
-                if (serverComm.connectToServer("localhost", 12345)) {
-                    System.out.println("Connected to server successfully.");
-                } else {
-                    System.out.println("Failed to connect to server.");
-                }
+                this.client = new GameClient(12345);
                 player = new Player(username);
                 window.setScene(buildRoomSelectionScene());
-
             } catch (Exception e) {
                 e.printStackTrace();
                 //TODO -ERROR
@@ -145,7 +144,6 @@ public class ClientUI extends Application {
         titleLabel.setStyle("-fx-font-size: 20px;");
 
         roomList = new ListView<>(); // Initialize the room list
-        updateRoomList(); // Populate the room list
 
         Button joinRoomButton = createStyledButton("Dołącz do pokoju", false);
         joinRoomButton.setOnAction(e -> joinSelectedRoom());
@@ -197,9 +195,39 @@ public class ClientUI extends Application {
         }
     }
 
-    private void updateRoomList() {
-        roomList.getItems().clear(); // Clear existing items
-        roomList.getItems().addAll(roomManager.getRoomDetails()); // Add new items with player count
+    public void updateRoomList(String message) {
+        // Run the update on the JavaFX Application Thread
+        Platform.runLater(() -> {
+            // Check if the list is started, empty, or contains room details
+            if (message.equals("START_LIST")) {
+                // Clear the current room list in the UI
+                clearRoomList();
+            } else if (message.equals("EMPTY_LIST")) {
+                // Handle the case where there are no rooms available
+                // For example, show a message or clear the list
+                showNoRoomsAvailable();
+            } else {
+                // Parse the message for room details and update the UI
+                String[] parts = message.split(" ");
+                if (parts.length == 2 && parts[0].equals("ROOM")) {
+                    String roomDetails = parts[1];
+                    // Add this room to the UI list
+                    addRoomToList(roomDetails);
+                }
+            }
+        });
+    }
+
+    private void clearRoomList() {
+        roomList.getItems().clear();
+    }
+
+    private void showNoRoomsAvailable() {
+        roomList.getItems().clear();
+    }
+
+    private void addRoomToList(String roomDetails) {
+        roomList.getItems().add(roomDetails);
     }
 
     private void showCreateRoomDialog() {
@@ -242,8 +270,11 @@ public class ClientUI extends Application {
 
     private void createRoom(String roomName) {
         System.out.println("Nazwa nowego pokoju: " + roomName);
-        serverComm.sendMessage("CREATE_ROOM " + roomName);
-        updateRoomList(); // Update the room list after creating a new room
+        try{
+            client.sendMessage("CREATE_ROOM "+ roomName);
+        } catch (IOException e) {
+            System.out.println("error");
+        }
     }
 
     private void joinSelectedRoom() {

@@ -6,12 +6,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GameRoom {
+    private final String roomName;
     private final Set<Player> players;
     private String gameState;
     private static final int MAX_PLAYERS = 4;
     private final boolean gameStarted;
 
-    public GameRoom() {
+    public GameRoom(String roomName) {
+        this.roomName = roomName;
         this.players = new HashSet<>();
         this.gameStarted = false;
     }
@@ -47,6 +49,10 @@ public class GameRoom {
 
     public boolean canJoin() {
         return players.size() < MAX_PLAYERS && (!gameStarted);
+    }
+
+    public String getName() {
+        return roomName;
     }
 
     // Metody do zarządzania stanem gry

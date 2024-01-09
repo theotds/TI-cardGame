@@ -9,11 +9,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class RoomManager {
-    private static Map<String, GameRoom> rooms = new ConcurrentHashMap<>();
+    private static Map<String, GameRoom> rooms = new HashMap<>();
 
     public static void createRoom(String roomId) {
         if (!rooms.containsKey(roomId)) {
-            rooms.put(roomId, new GameRoom());
+            rooms.put(roomId, new GameRoom(roomId));
             System.out.println("Room " + roomId + " created.");
         } else {
             System.out.println("Room " + roomId + " already exists.");
