@@ -65,7 +65,6 @@ public class RoomManager {
     }
 
     public boolean doesRoomExist(String roomId) {
-        System.out.println(rooms.containsKey(roomId));
         return rooms.containsKey(roomId);
     }
 
