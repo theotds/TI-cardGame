@@ -66,11 +66,13 @@ public class Server {
 
     private static String joinRoom(String message) {
         String roomName = extractRoomName(message);
-        Player player = new Player(extractPlayerName(message));
         GameRoom room = gameRooms.getOrDefault(roomName, new GameRoom(roomName));
-        System.out.println(player.getName() + " joined game " + room.getName());
-        room.addPlayer(player);
-        gameRooms.putIfAbsent(roomName, room);
+        if(room.canJoin()){
+            Player player = new Player(extractPlayerName(message));
+            System.out.println(player.getName() + " joined game " + room.getName());
+            room.addPlayer(player);
+            gameRooms.putIfAbsent(roomName, room);
+        }
         return roomName;
     }
 
