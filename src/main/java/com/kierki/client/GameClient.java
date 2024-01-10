@@ -18,13 +18,16 @@ public class GameClient {
     public void startConnection(int port) throws IOException {
         try {
             clientSocket = ConnectToServer(port);
-            CompletableFuture.runAsync(() -> handleClient(clientSocket));
+            if (clientSocket != null) {
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                CompletableFuture.runAsync(() -> handleClient(clientSocket));
+            } else {
+                System.out.println("Connection failed: clientSocket is null");
+            }
         } catch (IOException e) {
             System.out.println("Error while connecting to server: " + e.getMessage());
         }
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
     }
 
     private void handleClient(Socket socket) {

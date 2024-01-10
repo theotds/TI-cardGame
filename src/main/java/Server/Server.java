@@ -12,27 +12,41 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
     // list for all rooms
     private static final HashMap<String, GameRoom> gameRooms = new HashMap<>();
     // clientWriters is list of writers for all connected clients
     private static final List<PrintWriter> clientWriters = new CopyOnWriteArrayList<>();
-
+    private static ExecutorService clientHandlingPool = Executors.newFixedThreadPool(8);
     private static final int PORT = 12345;
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Game Server is running in port " + PORT);
+
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                // Create a CompletableFuture to handle the client asynchronously,
-                // preventing the use of a dedicated thread for each client connection.
-                CompletableFuture.runAsync(() -> handleClient(clientSocket));
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    // Check for null socket (unlikely but safe to handle)
+                    if (clientSocket != null) {
+                        // Create a CompletableFuture to handle the client asynchronously
+                        clientHandlingPool.execute(() -> handleClient(clientSocket));
+                    } else {
+                        System.err.println("Accepted client socket is null");
+                    }
+                } catch (IOException e) {
+                    System.err.println("Error accepting client connection: " + e.getMessage());
+                    // Handle exception as needed (logging, retrying, etc.)
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private static void handleClient(Socket clientSocket) {
@@ -67,7 +81,7 @@ public class Server {
     private static String joinRoom(String message) {
         String roomName = extractRoomName(message);
         GameRoom room = gameRooms.getOrDefault(roomName, new GameRoom(roomName));
-        if(room.canJoin()){
+        if (room.canJoin()) {
             Player player = new Player(extractPlayerName(message));
             System.out.println(player.getName() + " joined game " + room.getName());
             room.addPlayer(player);
