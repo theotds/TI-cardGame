@@ -11,9 +11,10 @@ public class GameClient {
     private PrintWriter out;
     private BufferedReader in;
 
-    GameClient(int port) throws IOException{
+    GameClient(int port) throws IOException {
         startConnection(port);
     }
+
     public void startConnection(int port) throws IOException {
         try {
             clientSocket = ConnectToServer(port);
@@ -43,7 +44,11 @@ public class GameClient {
 
     private void processServerMessage(String message) {
         Platform.runLater(() -> {
-            ClientUI.getInstance().updateRoomList(message);
+            if (message.equals("START_LIST") || message.equals("EMPTY_LIST") || (message.startsWith("ROOM") && !message.startsWith("ROOM_UPDATE"))) {
+                ClientUI.getInstance().updateRoomList(message);
+            } else if (message.startsWith("ROOM_UPDATE")) {
+                ClientUI.getInstance().updateRoomPlayerCount(message);
+            }
         });
     }
 
@@ -52,6 +57,7 @@ public class GameClient {
         System.out.println("Connected successfully with server.");
         return socket;
     }
+
     public void sendMessage(String msg) throws IOException {
         out.println(msg);
     }

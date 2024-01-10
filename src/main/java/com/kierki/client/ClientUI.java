@@ -26,6 +26,7 @@ public class ClientUI extends Application {
     private final AuthenticationModule authentication = new AuthenticationModule();
     private Player player;
     private GameClient client;
+    private static final int MAX_PLAYERS = 4;
 
     private static ClientUI instance;
 
@@ -78,6 +79,7 @@ public class ClientUI extends Application {
                 this.client = new GameClient(12345);
                 player = new Player(username);
                 requestRoomList();
+
                 window.setScene(buildRoomSelectionScene());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,6 +91,14 @@ public class ClientUI extends Application {
     }
 
     private void requestRoomList() throws IOException {
+        if (this.client != null) {
+            // Send a message to the server to request the current list of rooms
+            // The format of this message depends on your server's protocol
+            this.client.sendMessage("GET_ROOM_LIST");
+        }
+    }
+
+    private void requestRoomUpdate() throws IOException {
         if (this.client != null) {
             // Send a message to the server to request the current list of rooms
             // The format of this message depends on your server's protocol
@@ -204,6 +214,28 @@ public class ClientUI extends Application {
         }
     }
 
+    public void updateRoomPlayerCount(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 3) {
+            String roomName = parts[1];
+            int playerCount = Integer.parseInt(parts[2]);
+
+            Platform.runLater(() -> {
+                // Assuming 'roomList' is a ListView or similar UI component
+                for (int i = 0; i < roomList.getItems().size(); i++) {
+                    String item = roomList.getItems().get(i);
+
+                    // Assuming each item in the list is in the format "RoomName: X players"
+                    if (item.startsWith(roomName)) {
+                        // Update the item with the new player count
+                        roomList.getItems().set(i, roomName + "\t" + playerCount + "/" + MAX_PLAYERS);
+                        break;  // Exit the loop once the item is found and updated
+                    }
+                }
+            });
+        }
+    }
+
     public void updateRoomList(String message) {
         // Run the update on the JavaFX Application Thread
         Platform.runLater(() -> {
@@ -221,7 +253,7 @@ public class ClientUI extends Application {
                 if (parts.length == 2 && parts[0].equals("ROOM")) {
                     String roomDetails = parts[1];
                     // Add this room to the UI list
-                    if(!roomManager.doesRoomExist(roomDetails)){
+                    if (!roomManager.doesRoomExist(roomDetails)) {
                         RoomManager.createRoom(roomDetails);
                     }
                     addRoomToList(roomDetails);
@@ -282,8 +314,8 @@ public class ClientUI extends Application {
 
     private void createRoom(String roomName) {
         System.out.println("Nazwa nowego pokoju: " + roomName);
-        try{
-            client.sendMessage("CREATE_ROOM "+ roomName);
+        try {
+            client.sendMessage("CREATE_ROOM " + roomName);
         } catch (IOException e) {
             System.out.println("error");
         }
@@ -318,7 +350,7 @@ public class ClientUI extends Application {
     }
 
     private void proceedToGame(GameRoom room) throws IOException {
-        client.sendMessage("JOIN_ROOM:"+room.getName()+":"+player.getName());
+        client.sendMessage("JOIN_ROOM:" + room.getName() + ":" + player.getName());
         window.setScene(buildGameRoomScene(room));
     }
 

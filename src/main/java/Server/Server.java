@@ -51,19 +51,35 @@ public class Server {
             String message;
             while ((message = input.readLine()) != null) {
                 if (isJoinRoomMessage(message)) {
-                    String roomName = extractRoomName(message);
-                    Player player = new Player(extractPlayerName(message));
-                    GameRoom room = gameRooms.getOrDefault(roomName, new GameRoom(roomName));
-                    System.out.println(player.getName() + " joined game "+ room.getName());
-                    room.addPlayer(player);
-                    gameRooms.putIfAbsent(roomName, room);
-                }processClientMessage(clientSocket, message);
+                    String roomName = joinRoom(message);
+                    broadcastRoomStatus(roomName);
+                } else processClientMessage(clientSocket, message);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         } finally {
             if (output != null) {
                 clientWriters.remove(output);
+            }
+        }
+    }
+
+    private static String joinRoom(String message) {
+        String roomName = extractRoomName(message);
+        Player player = new Player(extractPlayerName(message));
+        GameRoom room = gameRooms.getOrDefault(roomName, new GameRoom(roomName));
+        System.out.println(player.getName() + " joined game " + room.getName());
+        room.addPlayer(player);
+        gameRooms.putIfAbsent(roomName, room);
+        return roomName;
+    }
+
+    private static void broadcastRoomStatus(String roomName) {
+        GameRoom room = gameRooms.get(roomName);
+        if (room != null) {
+            String statusMessage = "ROOM_UPDATE:" + roomName + ":" + room.getAmountOfPlayers();
+            for (PrintWriter writer : clientWriters) {
+                writer.println(statusMessage);
             }
         }
     }
@@ -91,10 +107,23 @@ public class Server {
 
             if (action.equals("CREATE_ROOM")) {
                 addRoom(details, clientSocket);
+                broadcastRoomStatus(details);
             }
         }
         if (message.equals("GET_ROOM_LIST")) {
             sendRoomsList();
+            broadcastAllRoomStatus();
+        }
+    }
+
+    private static void broadcastAllRoomStatus() {
+        for (Map.Entry<String, GameRoom> entry : gameRooms.entrySet()) {
+            String roomName = entry.getKey();
+            GameRoom room = entry.getValue();
+            String statusMessage = "ROOM_UPDATE:" + roomName + ":" + room.getPlayers().size();
+            for (PrintWriter writer : clientWriters) {
+                writer.println(statusMessage);
+            }
         }
     }
 

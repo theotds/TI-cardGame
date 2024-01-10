@@ -11,15 +11,22 @@ public class GameRoom {
     private String gameState;
     private static final int MAX_PLAYERS = 4;
     private final boolean gameStarted;
+    private int amountOfPlayers;
 
     public GameRoom(String roomName) {
         this.roomName = roomName;
         this.players = new HashSet<>();
         this.gameStarted = false;
+        this.amountOfPlayers = 0;
+    }
+
+    public int getAmountOfPlayers() {
+        return amountOfPlayers;
     }
 
     public void addPlayer(Player player) {
         players.add(player);
+        amountOfPlayers += 1;
     }
 
     public void removePlayer(Player player) {
