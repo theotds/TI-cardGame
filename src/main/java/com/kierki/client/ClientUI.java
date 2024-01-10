@@ -324,7 +324,7 @@ public class ClientUI extends Application {
     private void joinSelectedRoom() {
         String selectedRoom = roomList.getSelectionModel().getSelectedItem();
         if (selectedRoom != null && !selectedRoom.trim().isEmpty()) {
-            String roomId = selectedRoom.split(" ")[0]; // Assuming the room ID is the first part of the list item
+            String roomId = selectedRoom.split("\t")[0]; // Assuming the room ID is the first part of the list item
             if (roomManager.doesRoomExist(roomId)) {
                 GameRoom room = roomManager.getRoom(roomId);
                 if (room != null && room.canJoin()) {
