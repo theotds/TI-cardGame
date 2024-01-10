@@ -219,7 +219,7 @@ public class ClientUI extends Application {
                     // Assuming each item in the list is in the format "RoomName: X players"
                     if (item.startsWith(roomName)) {
                         // Update the item with the new player count
-                        roomList.getItems().set(i, roomName + "\t" + playerCount + "/" + MAX_PLAYERS);
+                        roomList.getItems().set(i, roomName + "\t\t" + playerCount + "/" + MAX_PLAYERS);
                         roomManager.getRoom(roomName).setPlayerCount(playerCount);
                         break;  // Exit the loop once the item is found and updated
                     }
