@@ -301,7 +301,7 @@ public class ClientUI extends Application {
                     // Proceed to game scene or lobby
                     try {
                         proceedToGame(room);
-                    } catch (FileNotFoundException e) {
+                    } catch (IOException e) {
                         System.out.println("card not found");
                         return;
                     }
@@ -317,7 +317,8 @@ public class ClientUI extends Application {
         }
     }
 
-    private void proceedToGame(GameRoom room) throws FileNotFoundException {
+    private void proceedToGame(GameRoom room) throws IOException {
+        client.sendMessage("JOIN_ROOM:"+room.getName()+":"+player.getName());
         window.setScene(buildGameRoomScene(room));
     }
 

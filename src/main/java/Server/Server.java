@@ -1,6 +1,7 @@
 package Server;
 
 import Rooms.GameRoom;
+import com.kierki.client.Player;
 
 import java.io.*;
 import java.net.*;
@@ -49,7 +50,14 @@ public class Server {
 
             String message;
             while ((message = input.readLine()) != null) {
-                processClientMessage(clientSocket, message);
+                if (isJoinRoomMessage(message)) {
+                    String roomName = extractRoomName(message);
+                    Player player = new Player(extractPlayerName(message));
+                    GameRoom room = gameRooms.getOrDefault(roomName, new GameRoom(roomName));
+                    System.out.println(player.getName() + " joined game "+ room.getName());
+                    room.addPlayer(player);
+                    gameRooms.putIfAbsent(roomName, room);
+                }processClientMessage(clientSocket, message);
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -58,6 +66,20 @@ public class Server {
                 clientWriters.remove(output);
             }
         }
+    }
+
+    private static String extractRoomName(String message) {
+        String[] parts = message.split(":");
+        return parts.length > 1 ? parts[1] : "";
+    }
+
+    private static String extractPlayerName(String message) {
+        String[] parts = message.split(":");
+        return parts.length > 2 ? parts[2] : "";
+    }
+
+    private static boolean isJoinRoomMessage(String message) {
+        return message.startsWith("JOIN_ROOM:");
     }
 
     private static void processClientMessage(Socket clientSocket, String message) {
