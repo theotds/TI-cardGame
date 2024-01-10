@@ -98,14 +98,6 @@ public class ClientUI extends Application {
         }
     }
 
-    private void requestRoomUpdate() throws IOException {
-        if (this.client != null) {
-            // Send a message to the server to request the current list of rooms
-            // The format of this message depends on your server's protocol
-            this.client.sendMessage("GET_ROOM_LIST");
-        }
-    }
-
     private Scene buildRegisterScene() {
         VBox layout = new VBox(15); // Zwiększony odstęp między elementami
         configureLayout(layout);
@@ -205,8 +197,7 @@ public class ClientUI extends Application {
 
     private String readGameRules() {
         String rulesPath = "C:/TI-java/kierki/src/main/java/rules.txt";
-        try (FileInputStream fileStream = new FileInputStream(rulesPath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.UTF_8))) {
+        try (FileInputStream fileStream = new FileInputStream(rulesPath); BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
             e.printStackTrace(); // This will print more detailed error information
@@ -229,6 +220,7 @@ public class ClientUI extends Application {
                     if (item.startsWith(roomName)) {
                         // Update the item with the new player count
                         roomList.getItems().set(i, roomName + "\t" + playerCount + "/" + MAX_PLAYERS);
+                        roomManager.getRoom(roomName).setPlayerCount(playerCount);
                         break;  // Exit the loop once the item is found and updated
                     }
                 }
@@ -324,12 +316,13 @@ public class ClientUI extends Application {
     private void joinSelectedRoom() {
         String selectedRoom = roomList.getSelectionModel().getSelectedItem();
         if (selectedRoom != null && !selectedRoom.trim().isEmpty()) {
-            String roomId = selectedRoom.split("\t")[0]; // Assuming the room ID is the first part of the list item
+            String roomId = selectedRoom.split("\t\t")[0]; // Assuming the room ID is the first part of the list item
             if (roomManager.doesRoomExist(roomId)) {
                 GameRoom room = roomManager.getRoom(roomId);
                 if (room != null && room.canJoin()) {
-                    System.out.println("joining");
+                    System.out.println("joining " + room.getName());
                     room.addPlayer(player); // You need a Player object here
+                    System.out.println(roomManager.getRoom(roomId).getAmountOfPlayers());
                     // Proceed to game scene or lobby
                     try {
                         proceedToGame(room);

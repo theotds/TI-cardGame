@@ -26,7 +26,7 @@ public class GameRoom {
 
     public void addPlayer(Player player) {
         players.add(player);
-        amountOfPlayers += 1;
+        this.amountOfPlayers += 1;
     }
 
     public void removePlayer(Player player) {
@@ -46,7 +46,7 @@ public class GameRoom {
     }
 
     public boolean isFull() {
-        return players.size() >= MAX_PLAYERS;
+        return amountOfPlayers >= MAX_PLAYERS;
     }
 
     // Method to check if the game has already started
@@ -55,11 +55,15 @@ public class GameRoom {
     }
 
     public boolean canJoin() {
-        return players.size() < MAX_PLAYERS && (!gameStarted);
+        return (!isFull()) && (!gameStarted);
     }
 
     public String getName() {
         return roomName;
+    }
+
+    public void setPlayerCount(int playerCount) {
+        this.amountOfPlayers = playerCount;
     }
 
     // Metody do zarządzania stanem gry
