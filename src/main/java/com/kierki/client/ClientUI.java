@@ -35,6 +35,8 @@ public class ClientUI extends Application {
     private Player player;
     private GameClient client;
 
+    private TextArea chatMessages;
+
     public static ClientUI getInstance() {
         return instance;
     }
@@ -341,6 +343,9 @@ public class ClientUI extends Application {
     private void proceedToGame(GameRoom room) throws IOException {
         client.sendMessage("JOIN_ROOM:" + room.getName() + ":" + player.getName());
         playingRoom = room;
+
+        window.setX(0);
+        window.setY(0);
         window.setScene(buildGameRoomScene(room));
     }
 
@@ -363,7 +368,7 @@ public class ClientUI extends Application {
         // Chat Area
         VBox chatArea = new VBox(10);
         chatArea.setPadding(new Insets(10));
-        TextArea chatMessages = new TextArea();
+        chatMessages = new TextArea();
         chatMessages.setEditable(false);
         TextField chatInput = new TextField();
 
@@ -371,24 +376,16 @@ public class ClientUI extends Application {
         sendMessageButton.setOnAction(event -> {
             // TODO: Implement send message action
             String message = chatInput.getText();
-            chatMessages.appendText(message + "\n");
+            try {
+                client.sendMessage("CHAT:ROOM-"+room.getName()+":"+message);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             chatInput.clear();
         });
 
-        Button voiceChatButton = new Button("Voice Chat");
-        voiceChatButton.setOnAction(event -> {
-            // Placeholder for voice chat functionality
-            System.out.println("Voice chat feature not implemented yet.");
-        });
-
-        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, voiceChatButton);
+        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton);
         chatArea.setPrefWidth(300);
-
-        Button exitButton = new Button("Exit");
-        exitButton.setOnAction(event -> {
-            // TODO: Add your exit logic here
-            window.close(); // For example, just close the window
-        });
 
 
         HBox playerHandArea = new HBox(10); // Horizontal box with spacing
@@ -426,15 +423,24 @@ public class ClientUI extends Application {
             System.out.println("empty");
         }
         gameArea.getChildren().add(playerHandArea);
-        HBox exitButtonContainer = new HBox(exitButton);
-        exitButtonContainer.setAlignment(Pos.BOTTOM_RIGHT); // Align to bottom-right
-        exitButtonContainer.setPadding(new Insets(10)); // Add some padding
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
         borderPane.setRight(chatArea); // Assuming chatArea is defined
-        borderPane.setBottom(exitButtonContainer);
 
-        return new Scene(borderPane, 1820,980);
+        return new Scene(borderPane, 1860,980);
+    }
+
+    public void updateChat(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 3) {
+            String roomName = parts[1];
+            String chatMessage = parts[2];
+            if(roomName.equals(playingRoom.getName())){
+                Platform.runLater(() -> {
+                    chatMessages.appendText(chatMessage + "\n");
+                });
+            }
+        }
     }
 }

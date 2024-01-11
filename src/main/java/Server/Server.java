@@ -68,6 +68,8 @@ public class Server {
                 if (isJoinRoomMessage(message)) {
                     String roomName = joinRoom(message);
                     broadcastRoomStatus(roomName);
+                } else if(isChatMessage(message)){
+                    processChatMessage(message);
                 } else processClientMessage(clientSocket, message);
             }
         } catch (IOException e) {
@@ -77,6 +79,30 @@ public class Server {
                 clientWriters.remove(output);
             }
         }
+    }
+
+    private static void processChatMessage(String message) {
+        System.out.println(message);
+        if (message.startsWith("CHAT:")) {
+            String[] parts = message.split(":", 3);
+            if (parts.length == 3) {
+                String roomName = parts[1].split("-")[1];
+                String chatMessage = parts[2];
+
+                GameRoom room = gameRooms.get(roomName);
+                if (room != null) {
+                    // Broadcast the message to all players in the room
+                    for (PrintWriter writer : clientWriters) {
+                        writer.println("CHAT:" + roomName + ":" + chatMessage);
+                    }
+                } else {
+                    System.out.println("Room not found: " + roomName);
+                }
+            }
+        }
+    }
+    private static boolean isChatMessage(String message) {
+        return message.startsWith("CHAT:");
     }
 
     private static String joinRoom(String message) {
