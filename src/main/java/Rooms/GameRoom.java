@@ -11,9 +11,8 @@ public class GameRoom {
     private static final int MAX_PLAYERS = 4;
     private final String roomName;
     private final Set<Player> players;
-    private final boolean gameStarted;
+    private boolean gameStarted;
     private final Deck deck;
-    private String gameState;
     private int amountOfPlayers;
 
     public GameRoom(String roomName) {
@@ -22,6 +21,10 @@ public class GameRoom {
         this.gameStarted = false;
         this.amountOfPlayers = 0;
         this.deck = new Deck();
+    }
+
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
     }
 
     public int getAmountOfPlayers() {
@@ -47,14 +50,6 @@ public class GameRoom {
 
     public Set<Player> getPlayers() {
         return players;
-    }
-
-    public String getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(String gameState) {
-        this.gameState = gameState;
     }
 
     public boolean isFull() {

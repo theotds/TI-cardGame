@@ -1,5 +1,6 @@
 package Server;
 
+import Game.Card;
 import Rooms.GameRoom;
 import com.kierki.client.Player;
 
@@ -68,7 +69,7 @@ public class Server {
                 if (isJoinRoomMessage(message)) {
                     String roomName = joinRoom(message);
                     broadcastRoomStatus(roomName);
-                } else if(isChatMessage(message)){
+                } else if (isChatMessage(message)) {
                     processChatMessage(message);
                 } else processClientMessage(clientSocket, message);
             }
@@ -84,23 +85,24 @@ public class Server {
     private static void processChatMessage(String message) {
         System.out.println(message);
         if (message.startsWith("CHAT:")) {
-            String[] parts = message.split(":", 3);
-            if (parts.length == 3) {
+            String[] parts = message.split(":", 4);
+            if (parts.length == 4) {
                 String roomName = parts[1].split("-")[1];
-                String chatMessage = parts[2];
+                String nickName = parts[2];
+                String chatMessage = parts[3];
 
                 GameRoom room = gameRooms.get(roomName);
                 if (room != null) {
                     // Broadcast the message to all players in the room
-                    for (PrintWriter writer : clientWriters) {
-                        writer.println("CHAT:" + roomName + ":" + chatMessage);
-                    }
+                    String sendMessage = "CHAT:" + roomName + ":" + nickName + ":" + chatMessage;
+                    sendMessageToClient(sendMessage);
                 } else {
                     System.out.println("Room not found: " + roomName);
                 }
             }
         }
     }
+
     private static boolean isChatMessage(String message) {
         return message.startsWith("CHAT:");
     }
@@ -113,6 +115,17 @@ public class Server {
             System.out.println(player.getName() + " joined game " + room.getName());
             room.addPlayer(player);
             gameRooms.putIfAbsent(roomName, room);
+            if(room.isFull()){
+                room.dealCardsToPlayers();  // Deal cards to players
+                for (Player roomPlayer : room.getPlayers()) {
+                    StringBuilder cardsMessage = new StringBuilder("CARDS:" + room.getName() + ":" + roomPlayer.getName() + ":");
+                    for (Card card : player.getHand()) {
+                        // Assuming Card class has a toString or similar method to represent the card
+                        cardsMessage.append(card.toString()).append(",");
+                    }
+                    sendMessageToClient(cardsMessage.toString());
+                }
+            }
         }
         return roomName;
     }
@@ -121,9 +134,7 @@ public class Server {
         GameRoom room = gameRooms.get(roomName);
         if (room != null) {
             String statusMessage = "ROOM_UPDATE:" + roomName + ":" + room.getAmountOfPlayers();
-            for (PrintWriter writer : clientWriters) {
-                writer.println(statusMessage);
-            }
+            sendMessageToClient(statusMessage);
         }
     }
 
@@ -164,9 +175,13 @@ public class Server {
             String roomName = entry.getKey();
             GameRoom room = entry.getValue();
             String statusMessage = "ROOM_UPDATE:" + roomName + ":" + room.getPlayers().size();
-            for (PrintWriter writer : clientWriters) {
-                writer.println(statusMessage);
-            }
+            sendMessageToClient(statusMessage);
+        }
+    }
+
+    private static void sendMessageToClient(String message) {
+        for (PrintWriter writer : clientWriters) {
+            writer.println(message);
         }
     }
 
@@ -181,9 +196,7 @@ public class Server {
         synchronized (gameRooms) {
             // Check if the list of rooms is empty
             if (gameRooms.isEmpty()) {
-                for (PrintWriter clientWriter : clientWriters) {
-                    clientWriter.println("EMPTY_LIST");
-                }
+                sendMessageToClient("EMPTY_LIST");
             } else {
                 // Iterate over each client and send them the list of rooms
                 for (PrintWriter clientWriter : clientWriters) {

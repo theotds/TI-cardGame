@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileUserManager {
-    private static final String FILE_PATH = "C:\\TI-java\\kierki\\src\\main\\java\\users.txt";
+    private static final String FILE_PATH = "C:/TiCardProject/TI-cardGame/src/main/java/users.txt";
 
     public FileUserManager() {
         try {

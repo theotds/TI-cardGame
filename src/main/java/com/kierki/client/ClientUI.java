@@ -27,12 +27,13 @@ import java.util.stream.Collectors;
 public class ClientUI extends Application {
     private static final int MAX_PLAYERS = 4;
     private static ClientUI instance;
+    private static HBox playerHandArea;
+    private static GameRoom playingRoom;
+    private static Player player;
     private final RoomManager roomManager = new RoomManager();
     private final AuthenticationModule authentication = new AuthenticationModule();
     private Stage window;
-    private GameRoom playingRoom;
     private ListView<String> roomList;
-    private Player player;
     private GameClient client;
 
     private TextArea chatMessages;
@@ -43,6 +44,47 @@ public class ClientUI extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private static void updatePlayerHandArea() {
+        for (Card card : player.getHand()) {
+            System.out.println(card.toString());
+            ImageView cardView = new ImageView(new Image(card.getImagePath()));
+            cardView.setFitWidth(90);
+            cardView.setPreserveRatio(true);
+            playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
+        }
+        if (player.getHand().isEmpty()) {
+            System.out.println("empty");
+        }
+    }
+
+    public static void setPlayerCards(String roomName, String playerName, String[] cards) {
+        if (roomName.equals(playingRoom.getName()) && playerName.equals(player.getName())) {
+            player.getHand().clear();  // Clear current hand
+            for (String cardName : cards) {
+                String[] parts = cardName.split(" of ");
+                String rank = parts[0];
+                String suit = parts[1];
+                Card newCard = createCardFromName(suit, rank);  // Create a new Card object
+                player.getHand().add(newCard);  // Add the card to the player's hand
+            }
+            updatePlayerHandArea();
+        }
+    }
+
+    private static Card createCardFromName(String suit, String rank) {
+        // Convert string parts to Suit and Rank enums
+        Card.Suit suitCard;
+        Card.Rank rankCard;
+        try {
+            suitCard = Card.Suit.valueOf(suit);
+            rankCard = Card.Rank.valueOf(rank);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid suit or rank in card name");
+        }
+
+        return new Card(suitCard, rankCard);
     }
 
     @Override
@@ -255,6 +297,8 @@ public class ClientUI extends Application {
         roomList.getItems().clear();
     }
 
+    //TODO - TEXT CHAT, VOICE CHAT, GAME LOGIC, ADD PLAYERS, EXIT,
+
     private void showNoRoomsAvailable() {
         roomList.getItems().clear();
     }
@@ -349,8 +393,6 @@ public class ClientUI extends Application {
         window.setScene(buildGameRoomScene(room));
     }
 
-    //TODO - TEXT CHAT, VOICE CHAT, GAME LOGIC, ADD PLAYERS, EXIT,
-
     private void showAlert(String message) {
         // Show an alert dialog or update a status label with the message
         System.out.println(message); // Just as a placeholder, should be replaced with UI code
@@ -377,7 +419,7 @@ public class ClientUI extends Application {
             // TODO: Implement send message action
             String message = chatInput.getText();
             try {
-                client.sendMessage("CHAT:ROOM-"+room.getName()+":"+message);
+                client.sendMessage("CHAT:ROOM-" + room.getName() + ":" + player.getName() + ":" + message);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -387,58 +429,29 @@ public class ClientUI extends Application {
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton);
         chatArea.setPrefWidth(300);
 
-
-        HBox playerHandArea = new HBox(10); // Horizontal box with spacing
+        playerHandArea = new HBox(10); // Horizontal box with spacing
         playerHandArea.setPadding(new Insets(10));
         playerHandArea.setAlignment(Pos.BOTTOM_CENTER); // Center align the cards
 
-        // Assuming Player class has a method getHand() returning a list of Card objects
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
-
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
-        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.TWO));
-
-        for (Card card : player.getHand()) {
-            System.out.println(card.toString());
-            ImageView cardView = new ImageView(new Image(card.getImagePath()));
-            cardView.setFitWidth(80);
-            cardView.setPreserveRatio(true);
-            playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
-        }
-        if(player.getHand().isEmpty()){
-            System.out.println("empty");
-        }
+        updatePlayerHandArea();
         gameArea.getChildren().add(playerHandArea);
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
         borderPane.setRight(chatArea); // Assuming chatArea is defined
 
-        return new Scene(borderPane, 1860,980);
+        return new Scene(borderPane, 1860, 980);
     }
 
     public void updateChat(String message) {
         String[] parts = message.split(":");
-        if (parts.length == 3) {
+        if (parts.length == 4) {
             String roomName = parts[1];
-            String chatMessage = parts[2];
-            if(roomName.equals(playingRoom.getName())){
+            String playerNick = parts[2];
+            String chatMessage = parts[3];
+            if (roomName.equals(playingRoom.getName())) {
                 Platform.runLater(() -> {
-                    chatMessages.appendText(chatMessage + "\n");
+                    chatMessages.appendText(playerNick + ": " + chatMessage + "\n");
                 });
             }
         }
