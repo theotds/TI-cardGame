@@ -1,5 +1,6 @@
 package com.kierki.client;
 
+import Game.Card;
 import Rooms.GameRoom;
 import Rooms.RoomManager;
 import javafx.application.Application;
@@ -8,6 +9,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -96,8 +99,6 @@ public class ClientUI extends Application {
 
     private void requestRoomList() throws IOException {
         if (this.client != null) {
-            // Send a message to the server to request the current list of rooms
-            // The format of this message depends on your server's protocol
             this.client.sendMessage("GET_ROOM_LIST");
         }
     }
@@ -388,6 +389,42 @@ public class ClientUI extends Application {
             window.close(); // For example, just close the window
         });
 
+
+        HBox playerHandArea = new HBox(10); // Horizontal box with spacing
+        playerHandArea.setPadding(new Insets(10));
+        playerHandArea.setAlignment(Pos.BOTTOM_CENTER); // Center align the cards
+
+        // Assuming Player class has a method getHand() returning a list of Card objects
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
+
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.ACE));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.KING));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.QUEEN));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.JACK));
+        player.getHand().add(0,new Card(Card.Suit.HEARTS, Card.Rank.TWO));
+
+        for (Card card : player.getHand()) {
+            System.out.println(card.toString());
+            ImageView cardView = new ImageView(new Image(card.getImagePath()));
+            cardView.setFitWidth(80);
+            cardView.setPreserveRatio(true);
+            playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
+        }
+        if(player.getHand().isEmpty()){
+            System.out.println("empty");
+        }
+        gameArea.getChildren().add(playerHandArea);
         HBox exitButtonContainer = new HBox(exitButton);
         exitButtonContainer.setAlignment(Pos.BOTTOM_RIGHT); // Align to bottom-right
         exitButtonContainer.setPadding(new Insets(10)); // Add some padding
@@ -397,6 +434,6 @@ public class ClientUI extends Application {
         borderPane.setRight(chatArea); // Assuming chatArea is defined
         borderPane.setBottom(exitButtonContainer);
 
-        return new Scene(borderPane, 800, 600);
+        return new Scene(borderPane, 1820,980);
     }
 }
