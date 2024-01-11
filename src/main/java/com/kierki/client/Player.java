@@ -1,17 +1,25 @@
 package com.kierki.client;
 
+import Game.Card;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player {
     private String name;
     private int score;
-    private String gameState; // This could represent different states like "Playing", "Waiting", etc.
+    private List<Card> hand;
 
     public Player(String name) {
         this.name = name;
-        this.score = 0; // Initialize score to 0
-        this.gameState = "Waiting"; // Default state
+        this.score = 0;
+        this.hand = new ArrayList<>();
     }
 
-    // Getters and Setters
+    public List<Card> getHand() {
+        return hand;
+    }
+
     public String getName() {
         return name;
     }
@@ -26,14 +34,6 @@ public class Player {
 
     public void setScore(int score) {
         this.score = score;
-    }
-
-    public String getGameState() {
-        return gameState;
-    }
-
-    public void setGameState(String gameState) {
-        this.gameState = gameState;
     }
 
     // Method to update the player's score

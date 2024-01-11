@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 public class ClientUI extends Application {
     private Stage window;
     private final RoomManager roomManager = new RoomManager();
+
+    private GameRoom playingRoom;
     private ListView<String> roomList;
     private final AuthenticationModule authentication = new AuthenticationModule();
     private Player player;
@@ -151,7 +153,7 @@ public class ClientUI extends Application {
         VBox layout = new VBox(15);
         configureLayout(layout);
 
-        Label titleLabel = new Label("Wybierz pokój do gry");
+        Label titleLabel = new Label(player.getName() + "Wybierz pokój do gry");
         titleLabel.setStyle("-fx-font-size: 20px;");
 
         roomList = new ListView<>(); // Initialize the room list
@@ -183,16 +185,10 @@ public class ClientUI extends Application {
         textArea.setWrapText(true);
         textArea.setPrefHeight(600);
 
-
         rulesAlert.getDialogPane().setContent(textArea);
         rulesAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 
         rulesAlert.showAndWait();
-    }
-
-    private String getGameRules() {
-        // Define the game rules as a String
-        return readGameRules();
     }
 
     private String readGameRules() {
@@ -269,7 +265,7 @@ public class ClientUI extends Application {
     private void showCreateRoomDialog() {
         // Create the custom dialog.
         Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Stwórz nowy pokój");
+        dialog.setTitle(player.getName() + "Stwórz nowy pokój");
 
         // Set the button types.
         ButtonType createButtonType = new ButtonType("Stwórz", ButtonBar.ButtonData.OK_DONE);
@@ -326,6 +322,7 @@ public class ClientUI extends Application {
                     // Proceed to game scene or lobby
                     try {
                         proceedToGame(room);
+
                     } catch (IOException e) {
                         System.out.println("card not found");
                         return;
@@ -344,6 +341,7 @@ public class ClientUI extends Application {
 
     private void proceedToGame(GameRoom room) throws IOException {
         client.sendMessage("JOIN_ROOM:" + room.getName() + ":" + player.getName());
+        playingRoom = room;
         window.setScene(buildGameRoomScene(room));
     }
 
@@ -357,6 +355,7 @@ public class ClientUI extends Application {
     private Scene buildGameRoomScene(GameRoom room) {
         BorderPane borderPane = new BorderPane();
 
+        window.setTitle("Pokój: " + room.getName() + " gracz: "+ player.getName());
         // Game Area
         HBox gameArea = new HBox();
         gameArea.setPadding(new Insets(10));
@@ -402,26 +401,6 @@ public class ClientUI extends Application {
         borderPane.setBottom(exitButtonContainer);
 
         return new Scene(borderPane, 800, 600);
-    }
-
-    private VBox waitingRoom(String roomId) {
-        VBox layout = new VBox(15);
-        configureLayout(layout);
-
-        Label titleLabel = new Label("Pokój gry: " + roomId);
-        titleLabel.setStyle("-fx-font-size: 20px;");
-
-        // Add game UI components here
-        // For example: a label showing the game state, game board, player stats, etc.
-        Label gameStateLabel = new Label("Stan gry: Oczekiwanie na innych graczy...");
-        gameStateLabel.setStyle("-fx-font-size: 16px;");
-
-        // Example button to leave the game (return to room selection)
-        Button leaveGameButton = createStyledButton("Opuść grę", false);
-        leaveGameButton.setOnAction(e -> window.setScene(buildRoomSelectionScene()));
-
-        layout.getChildren().addAll(titleLabel, gameStateLabel, leaveGameButton);
-        return layout;
     }
 
 
