@@ -11,31 +11,34 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.io.*;
-import java.util.Optional;
-
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // TODO - SERVER-CLIENT, GAME UI, JOIN ROOM, PLAYER, JOIN AFTER CREATE
 
 public class ClientUI extends Application {
-    private Stage window;
+    private static final int MAX_PLAYERS = 4;
+    private static ClientUI instance;
     private final RoomManager roomManager = new RoomManager();
-
+    private final AuthenticationModule authentication = new AuthenticationModule();
+    private Stage window;
     private GameRoom playingRoom;
     private ListView<String> roomList;
-    private final AuthenticationModule authentication = new AuthenticationModule();
     private Player player;
     private GameClient client;
-    private static final int MAX_PLAYERS = 4;
-
-    private static ClientUI instance;
 
     public static ClientUI getInstance() {
         return instance;
     }
 
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) {
@@ -47,7 +50,6 @@ public class ClientUI extends Application {
         window.setScene(loginScene);
         window.show();
     }
-
 
     private Scene buildLoginScene() {
         VBox layout = new VBox(15); // Zwiększony odstęp między elementami
@@ -125,12 +127,9 @@ public class ClientUI extends Application {
         return new Scene(layout, 600, 400); // Zwiększony rozmiar okna
     }
 
-    private boolean register(TextField usernameInput, PasswordField passwordInput) {
-        boolean registered = authentication.registerUser(usernameInput.getText(), passwordInput.getText());
-        //TODO - ERROR
-        return registered;
+    private void register(TextField usernameInput, PasswordField passwordInput) {
+        authentication.registerUser(usernameInput.getText(), passwordInput.getText());
     }
-
 
     private Button createStyledButton(String text, boolean isDisabled) {
         Button button = new Button(text);
@@ -146,7 +145,6 @@ public class ClientUI extends Application {
         layout.setAlignment(Pos.CENTER);
         layout.setStyle("-fx-background-color: #FFFFFF; -fx-font-size: 14px;");
     }
-
 
     // TODO - status gry
     private Scene buildRoomSelectionScene() {
@@ -325,7 +323,6 @@ public class ClientUI extends Application {
 
                     } catch (IOException e) {
                         System.out.println("card not found");
-                        return;
                     }
                 } else {
                     // Room is full or game is in progress
@@ -345,17 +342,17 @@ public class ClientUI extends Application {
         window.setScene(buildGameRoomScene(room));
     }
 
+    //TODO - TEXT CHAT, VOICE CHAT, GAME LOGIC, ADD PLAYERS, EXIT,
+
     private void showAlert(String message) {
         // Show an alert dialog or update a status label with the message
         System.out.println(message); // Just as a placeholder, should be replaced with UI code
     }
 
-    //TODO - TEXT CHAT, VOICE CHAT, GAME LOGIC, ADD PLAYERS, EXIT,
-
     private Scene buildGameRoomScene(GameRoom room) {
         BorderPane borderPane = new BorderPane();
 
-        window.setTitle("Pokój: " + room.getName() + " gracz: "+ player.getName());
+        window.setTitle("Pokój: " + room.getName() + " gracz: " + player.getName());
         // Game Area
         HBox gameArea = new HBox();
         gameArea.setPadding(new Insets(10));
@@ -401,10 +398,5 @@ public class ClientUI extends Application {
         borderPane.setBottom(exitButtonContainer);
 
         return new Scene(borderPane, 800, 600);
-    }
-
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

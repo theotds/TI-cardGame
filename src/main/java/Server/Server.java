@@ -1,15 +1,17 @@
 package Server;
 
-import Game.Card;
-import Game.Deck;
 import Rooms.GameRoom;
 import com.kierki.client.Player;
 
-import java.io.*;
-import java.net.*;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,8 +21,8 @@ public class Server {
     private static final HashMap<String, GameRoom> gameRooms = new HashMap<>();
     // clientWriters is list of writers for all connected clients
     private static final List<PrintWriter> clientWriters = new CopyOnWriteArrayList<>();
-    private static ExecutorService clientHandlingPool = Executors.newFixedThreadPool(8);
     private static final int PORT = 12345;
+    private static final ExecutorService clientHandlingPool = Executors.newFixedThreadPool(8);
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {

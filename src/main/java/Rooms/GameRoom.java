@@ -8,13 +8,13 @@ import java.util.Set;
 
 public class GameRoom {
     private static final int NUMBER_OF_CARDS_PER_PLAYER = 13;
+    private static final int MAX_PLAYERS = 4;
     private final String roomName;
     private final Set<Player> players;
-    private String gameState;
-    private static final int MAX_PLAYERS = 4;
     private final boolean gameStarted;
-    private int amountOfPlayers;
     private final Deck deck;
+    private String gameState;
+    private int amountOfPlayers;
 
     public GameRoom(String roomName) {
         this.roomName = roomName;

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class AuthenticationModule {
 
-    private FileUserManager userManager = new FileUserManager();
+    private final FileUserManager userManager = new FileUserManager();
 
     public boolean loginUser(String username, String password) {
         try {

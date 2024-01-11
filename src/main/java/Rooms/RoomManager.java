@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RoomManager {
-    private static Map<String, GameRoom> rooms = new HashMap<>();
+    private static final Map<String, GameRoom> rooms = new HashMap<>();
 
     public static void createRoom(String roomId) {
         if (!rooms.containsKey(roomId)) {

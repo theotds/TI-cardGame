@@ -2,8 +2,11 @@ package com.kierki.client;
 
 import javafx.application.Platform;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.concurrent.CompletableFuture;
 
 public class GameClient {
@@ -13,6 +16,12 @@ public class GameClient {
 
     GameClient(int port) throws IOException {
         startConnection(port);
+    }
+
+    private static Socket ConnectToServer(int port) throws IOException {
+        Socket socket = new Socket("localhost", port);
+        System.out.println("Connected successfully with server.");
+        return socket;
     }
 
     public void startConnection(int port) throws IOException {
@@ -44,7 +53,6 @@ public class GameClient {
         }
     }
 
-
     private void processServerMessage(String message) {
         Platform.runLater(() -> {
             if (message.equals("START_LIST") || message.equals("EMPTY_LIST") || (message.startsWith("ROOM") && !message.startsWith("ROOM_UPDATE"))) {
@@ -53,12 +61,6 @@ public class GameClient {
                 ClientUI.getInstance().updateRoomPlayerCount(message);
             }
         });
-    }
-
-    private static Socket ConnectToServer(int port) throws IOException {
-        Socket socket = new Socket("localhost", port);
-        System.out.println("Connected successfully with server.");
-        return socket;
     }
 
     public void sendMessage(String msg) throws IOException {

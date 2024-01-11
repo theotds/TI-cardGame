@@ -13,6 +13,7 @@ public class FileUserManager {
         try {
             Files.createFile(Paths.get(FILE_PATH));
         } catch (IOException e) {
+            System.out.println("File not found");
         }
     }
 
