@@ -303,6 +303,7 @@ public class ClientUI extends Application {
         System.out.println("Nazwa nowego pokoju: " + roomName);
         try {
             client.sendMessage("CREATE_ROOM " + roomName);
+            requestRoomList();
         } catch (IOException e) {
             System.out.println("error");
         }
