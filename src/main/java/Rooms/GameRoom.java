@@ -11,8 +11,8 @@ public class GameRoom {
     private static final int MAX_PLAYERS = 4;
     private final String roomName;
     private final Set<Player> players;
-    private boolean gameStarted;
     private final Deck deck;
+    private boolean gameStarted;
     private int amountOfPlayers;
 
     public GameRoom(String roomName) {
@@ -81,12 +81,10 @@ public class GameRoom {
 
     // Method to deal cards to players when the room is full
     public void dealCardsToPlayers() {
-        if (isFull()) {
-            deck.shuffle(); // Shuffle the deck before dealing
-            for (Player player : players) {
-                for (int i = 0; i < NUMBER_OF_CARDS_PER_PLAYER; i++) { // Assuming a fixed number of cards per player
-                    player.getHand().add(deck.dealCard());
-                }
+        deck.shuffle(); // Shuffle the deck before dealing
+        for (Player player : players) {
+            for (int i = 0; i < NUMBER_OF_CARDS_PER_PLAYER; i++) { // Assuming a fixed number of cards per player
+                player.getHand().add(deck.dealCard());
             }
         }
     }

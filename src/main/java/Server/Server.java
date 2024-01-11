@@ -119,7 +119,7 @@ public class Server {
                 room.dealCardsToPlayers();  // Deal cards to players
                 for (Player roomPlayer : room.getPlayers()) {
                     StringBuilder cardsMessage = new StringBuilder("CARDS:" + room.getName() + ":" + roomPlayer.getName() + ":");
-                    for (Card card : player.getHand()) {
+                    for (Card card : roomPlayer.getHand()) {
                         // Assuming Card class has a toString or similar method to represent the card
                         cardsMessage.append(card.toString()).append(",");
                     }
