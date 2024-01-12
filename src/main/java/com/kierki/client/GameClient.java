@@ -70,6 +70,8 @@ public class GameClient {
                 }
             } else if (message.startsWith("CHAT")){
                 ClientUI.getInstance().updateChat(message);
+            }else if (message.startsWith("PLAY")){
+                ClientUI.getInstance().updatePlayedCardsFromServer(message);
             }
         });
     }

@@ -20,6 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -443,12 +445,8 @@ public class ClientUI extends Application {
         Button confirmButton = createStyledButton("Confirm", false);
         confirmButton.setOnAction(event -> {
             try {
-                player.setPlayedCard(selectedCard);
-                playingRoom.resetPlayedCards();
-                playingRoom.setPlayedCards();
-                if (player.getPlayedCard() != null) {
-                    updatePlayedCards(room);
-                    client.sendMessage("PLAY:" + room.getName() + ":" + player.getName() + ":" + player.getPlayedCard().toString());
+                if (selectedCard != null) {
+                    client.sendMessage("PLAY:" + room.getName() + ":" + player.getName() + ":" + selectedCard.toString());
                 } else {
                     System.out.println("card not selected");
                 }
@@ -462,7 +460,6 @@ public class ClientUI extends Application {
         playedCardsArea.setAlignment(Pos.BASELINE_CENTER);
         // Style the playedCardsArea if necessary
 
-        updatePlayedCards(room);
 
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, confirmButton);
         chatArea.setPrefWidth(CHAT_SIZE);
@@ -471,7 +468,7 @@ public class ClientUI extends Application {
         playerHandArea.setPadding(new Insets(10));
         playerHandArea.setAlignment(Pos.BOTTOM_CENTER); // Center align the cards
         updatePlayerHandArea();
-        gameArea.getChildren().addAll(playerHandArea,playedCardsArea);
+        gameArea.getChildren().addAll(playerHandArea, playedCardsArea);
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
@@ -480,23 +477,20 @@ public class ClientUI extends Application {
         return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
     }
 
-    private void updatePlayedCards(GameRoom room) {
+    private void updatePlayedCards(PlayedCardInfo cardInfo) {
         // Assuming you have a way to get the list of played cards and the players who played them
-        if (room.getPlayedCards() != null) {
-            for (PlayedCardInfo cardInfo : room.getPlayedCards()) {
-                ImageView cardView = new ImageView(new Image(cardInfo.getCard().getImagePath()));
-                cardView.setFitWidth(CARD_WIDTH);
-                cardView.setPreserveRatio(true);
+        ImageView cardView = new ImageView(new Image(cardInfo.getCard().getImagePath()));
+        cardView.setFitWidth(CARD_WIDTH);
+        cardView.setPreserveRatio(true);
 
-                Label playerNameLabel = new Label(cardInfo.getPlayer().getName());
-                // Style the playerNameLabel if necessary
+        Label playerNameLabel = new Label(cardInfo.getPlayer());
+        // Style the playerNameLabel if necessary
 
-                VBox cardAndPlayer = new VBox(cardView, playerNameLabel);
-                cardAndPlayer.setAlignment(Pos.CENTER);
+        VBox cardAndPlayer = new VBox(cardView, playerNameLabel);
+        cardAndPlayer.setAlignment(Pos.CENTER);
 
-                playedCardsArea.getChildren().add(cardAndPlayer);
-            }
-        }
+        playedCardsArea.getChildren().add(cardAndPlayer);
+
     }
 
     public void updateChat(String message) {
@@ -509,6 +503,23 @@ public class ClientUI extends Application {
                 Platform.runLater(() -> {
                     chatMessages.appendText(playerNick + ": " + chatMessage + "\n");
                 });
+            }
+        }
+    }
+
+    public void updatePlayedCardsFromServer(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 4) {
+            String roomName = parts[1];
+            String playerNick = parts[2];
+            String cardName = parts[3];
+            if (roomName.equals(playingRoom.getName())) {
+                String[] cardDetails = cardName.split(" of ");
+                String rank = cardDetails[0];
+                String suit = cardDetails[1];
+                Card card = createCardFromName(suit, rank);
+                PlayedCardInfo cardInfo = new PlayedCardInfo(card,playerNick);
+                updatePlayedCards(cardInfo);
             }
         }
     }

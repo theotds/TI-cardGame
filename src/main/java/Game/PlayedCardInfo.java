@@ -5,18 +5,18 @@ import com.kierki.client.Player;
 
 public class PlayedCardInfo {
     private final Card card;
-    private final Player player;
+    private final String playerName;
 
-    public PlayedCardInfo(Card card, Player player) {
+    public PlayedCardInfo(Card card, String playerName) {
         this.card = card;
-        this.player = player;
+        this.playerName = playerName;
     }
 
     public Card getCard() {
         return card;
     }
 
-    public Player getPlayer() {
-        return player;
+    public String getPlayer() {
+        return playerName;
     }
 }

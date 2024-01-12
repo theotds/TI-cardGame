@@ -71,7 +71,7 @@ public class Server {
                     broadcastRoomStatus(roomName);
                 } else if (isChatMessage(message)) {
                     processChatMessage(message);
-                } else if (isPlayMessage(message)){
+                } else if (isPlayMessage(message)) {
                     processPlayMessage(message);
                 } else processClientMessage(clientSocket, message);
             }
@@ -84,8 +84,38 @@ public class Server {
         }
     }
 
+
     private static void processPlayMessage(String message) {
-        System.out.println(message);
+        String[] parts = message.split(":");
+        if (parts.length == 4) {
+            String roomName = parts[1];
+            String playerName = parts[2];
+            String cardName = parts[3];
+            GameRoom room = gameRooms.get(roomName);
+            if (room != null) {
+
+                Player player = room.findPlayer(playerName);
+                if(player != null) {
+                    String sendMessage = "PLAY:" + roomName + ":" + playerName + ":" + cardName;
+                    sendMessageToClient(sendMessage);
+                }
+                else{
+                    System.out.println("player not found: " + roomName);
+                }
+            } else {
+                System.out.println("Room not found: " + roomName);
+            }
+        }
+
+        // Process the card play
+        // For example, update the game state, notify other players, etc.
+        // You might need to identify which player sent the command, using clientSocket or another identifier
+
+        // Example: Update game state
+        // gameRoom.playCard(player, new Card(cardInfo));
+
+        // Send updates to other players
+        // For example: broadcastMessage("PLAYER_PLAYED:" + player.getName() + ":" + cardInfo);
     }
 
     private static boolean isPlayMessage(String message) {
@@ -125,7 +155,7 @@ public class Server {
             System.out.println(player.getName() + " joined game " + room.getName());
             room.addPlayer(player);
             gameRooms.putIfAbsent(roomName, room);
-            if(room.isFull()){
+            if (room.isFull()) {
                 room.dealCardsToPlayers();  // Deal cards to players
                 for (Player roomPlayer : room.getPlayers()) {
                     StringBuilder cardsMessage = new StringBuilder("CARDS:" + room.getName() + ":" + roomPlayer.getName() + ":");

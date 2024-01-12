@@ -92,14 +92,27 @@ public class GameRoom {
         }
     }
 
+    public void addPlayedCard(Card card, String playerName){
+        playedCards.add(new PlayedCardInfo(card, playerName));
+    }
+
     public void setPlayedCards() {
         for (Player player : players) {
             if (player.getPlayedCard() != null) {
                 Card card = player.getPlayedCard();
-                playedCards.add(new PlayedCardInfo(card, player)); // Add the card and player to the playedCards map
+                playedCards.add(new PlayedCardInfo(card, player.getName())); // Add the card and player to the playedCards map
                 player.getHand().remove(card);
             }
         }
+    }
+
+    public Player findPlayer(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null; // Return null if no player is found
     }
 
     public void resetPlayedCards() {
