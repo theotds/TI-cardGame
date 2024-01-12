@@ -45,6 +45,7 @@ public class Player {
     public void setPlayedCard(Card card) {
         playedCard = card;
     }
+
     public Card getPlayedCard() {
         return playedCard;
     }

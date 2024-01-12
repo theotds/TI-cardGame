@@ -66,11 +66,11 @@ public class GameClient {
                     String roomName = parts[1];
                     String playerName = parts[2]; // This should match the current player's name
                     String[] cards = parts[3].split(","); // Split the card details
-                    ClientUI.setPlayerCards(roomName,playerName,cards);
+                    ClientUI.setPlayerCards(roomName, playerName, cards);
                 }
-            } else if (message.startsWith("CHAT")){
+            } else if (message.startsWith("CHAT")) {
                 ClientUI.getInstance().updateChat(message);
-            }else if (message.startsWith("PLAY")){
+            } else if (message.startsWith("PLAY")) {
                 ClientUI.getInstance().updatePlayedCardsFromServer(message);
             }
         });

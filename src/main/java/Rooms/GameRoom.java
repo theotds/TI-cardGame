@@ -92,7 +92,7 @@ public class GameRoom {
         }
     }
 
-    public void addPlayedCard(Card card, String playerName){
+    public void addPlayedCard(Card card, String playerName) {
         playedCards.add(new PlayedCardInfo(card, playerName));
     }
 

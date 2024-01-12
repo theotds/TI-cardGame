@@ -95,11 +95,10 @@ public class Server {
             if (room != null) {
 
                 Player player = room.findPlayer(playerName);
-                if(player != null) {
+                if (player != null) {
                     String sendMessage = "PLAY:" + roomName + ":" + playerName + ":" + cardName;
                     sendMessageToClient(sendMessage);
-                }
-                else{
+                } else {
                     System.out.println("player not found: " + roomName);
                 }
             } else {

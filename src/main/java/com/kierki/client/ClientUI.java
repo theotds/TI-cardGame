@@ -518,7 +518,7 @@ public class ClientUI extends Application {
                 String rank = cardDetails[0];
                 String suit = cardDetails[1];
                 Card card = createCardFromName(suit, rank);
-                PlayedCardInfo cardInfo = new PlayedCardInfo(card,playerNick);
+                PlayedCardInfo cardInfo = new PlayedCardInfo(card, playerNick);
                 updatePlayedCards(cardInfo);
             }
         }
