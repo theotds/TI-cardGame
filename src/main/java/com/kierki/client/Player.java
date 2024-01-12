@@ -3,12 +3,13 @@ package com.kierki.client;
 import Game.Card;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Player {
     private String name;
     private int score;
-    private final List<Card> hand;
+    private List<Card> hand;
     private Card playedCard;
 
     public Player(String name) {
@@ -48,6 +49,20 @@ public class Player {
 
     public Card getPlayedCard() {
         return playedCard;
+    }
+
+    public void removeCard(String rankStr, String suitStr) {
+        Iterator<Card> iterator = hand.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            Card.Rank rank = Card.Rank.valueOf(rankStr); // Convert string to enum
+            Card.Suit suit = Card.Suit.valueOf(suitStr); // Convert string to enum
+
+            if (card.getRank() == rank && card.getSuit() == suit) {
+                iterator.remove();
+                break; // Remove only the first matching card
+            }
+        }
     }
 
     // Additional methods related to player actions can be added here

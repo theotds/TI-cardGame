@@ -54,8 +54,9 @@ public class ClientUI extends Application {
     }
 
     private static void updatePlayerHandArea() {
+        playerHandArea.getChildren().clear();
         for (Card card : player.getHand()) {
-            System.out.println(card.toString());
+            System.out.println(card);
             ImageView cardView = new ImageView(new Image(card.getImagePath()));
             cardView.setFitWidth(CARD_WIDTH);
             cardView.setPreserveRatio(true);
@@ -520,6 +521,11 @@ public class ClientUI extends Application {
                 Card card = createCardFromName(suit, rank);
                 PlayedCardInfo cardInfo = new PlayedCardInfo(card, playerNick);
                 updatePlayedCards(cardInfo);
+                if (playerNick.equals(player.getName())) {
+                    player.removeCard(rank,suit);
+                    selectedCard = null;
+                    updatePlayerHandArea();
+                }
             }
         }
     }
