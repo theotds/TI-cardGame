@@ -17,7 +17,7 @@ public class Card {
     private String determineImagePath(Suit suit, Rank rank) {
         String rankName = rank.name().toLowerCase();
         String suitName = suit.name().toLowerCase();
-        return "C:/TiCardProject/TI-cardGame/src/main/Images/Cards/" + suitName + "/" + rankName + ".png";
+        return "C:/TI-java/kierki/src/main/Images/Cards/" + suitName + "/" + rankName + ".png";
     }
 
     public String getImagePath() {

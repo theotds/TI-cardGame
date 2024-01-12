@@ -1,6 +1,7 @@
 package com.kierki.client;
 
 import Game.Card;
+import Game.PlayedCardInfo;
 import Rooms.GameRoom;
 import Rooms.RoomManager;
 import javafx.application.Application;
@@ -29,7 +30,6 @@ import static com.kierki.client.Consts.*;
 public class ClientUI extends Application {
     private static final int MAX_PLAYERS = 4;
     public static ImageView lastClickedCardView = null;
-    public static Card lastClickedCard = null;
     private static ClientUI instance;
     private static HBox playerHandArea;
     private static GameRoom playingRoom;
@@ -40,6 +40,8 @@ public class ClientUI extends Application {
     private ListView<String> roomList;
     private GameClient client;
     private TextArea chatMessages;
+    private static Card selectedCard;
+    private HBox playedCardsArea;
 
     public static ClientUI getInstance() {
         return instance;
@@ -58,13 +60,10 @@ public class ClientUI extends Application {
             cardView.setOnMouseClicked(event -> {
                 if (lastClickedCardView != null) {
                     lastClickedCardView.setTranslateY(0);
-                    lastClickedCard.unSelect();
                 }
-                lastClickedCard = card;
-                card.select();
                 cardView.setTranslateY(-20); // Adjust the Y position to move the card downwards
+                selectedCard = card;
                 lastClickedCardView = cardView;
-                card.select();
             });
 
             playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
@@ -443,9 +442,27 @@ public class ClientUI extends Application {
 
         Button confirmButton = createStyledButton("Confirm", false);
         confirmButton.setOnAction(event -> {
-            // Actions to perform when the confirm button is clicked
-            // For example, confirm the selected card, send a message to the server, etc.
+            try {
+                player.setPlayedCard(selectedCard);
+                playingRoom.resetPlayedCards();
+                playingRoom.setPlayedCards();
+                if (player.getPlayedCard() != null) {
+                    updatePlayedCards(room);
+                    client.sendMessage("PLAY:" + room.getName() + ":" + player.getName() + ":" + player.getPlayedCard().toString());
+                } else {
+                    System.out.println("card not selected");
+                }
+            } catch (IOException e) {
+                System.out.println("server Play error");
+            }
         });
+
+        playedCardsArea = new HBox(10);
+        playedCardsArea.setPadding(new Insets(10));
+        playedCardsArea.setAlignment(Pos.TOP_CENTER);
+        // Style the playedCardsArea if necessary
+
+        updatePlayedCards(room);
 
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, confirmButton);
         chatArea.setPrefWidth(CHAT_SIZE);
@@ -453,15 +470,33 @@ public class ClientUI extends Application {
         playerHandArea = new HBox(10); // Horizontal box with spacing
         playerHandArea.setPadding(new Insets(10));
         playerHandArea.setAlignment(Pos.BOTTOM_CENTER); // Center align the cards
-
         updatePlayerHandArea();
-        gameArea.getChildren().add(playerHandArea);
+        gameArea.getChildren().addAll(playerHandArea,playedCardsArea);
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
         borderPane.setRight(chatArea); // Assuming chatArea is defined
 
         return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
+    }
+
+    private void updatePlayedCards(GameRoom room) {
+        // Assuming you have a way to get the list of played cards and the players who played them
+        if (room.getPlayedCards() != null) {
+            for (PlayedCardInfo cardInfo : room.getPlayedCards()) {
+                ImageView cardView = new ImageView(new Image(cardInfo.getCard().getImagePath()));
+                cardView.setFitWidth(CARD_WIDTH);
+                cardView.setPreserveRatio(true);
+
+                Label playerNameLabel = new Label(cardInfo.getPlayer().getName());
+                // Style the playerNameLabel if necessary
+
+                VBox cardAndPlayer = new VBox(cardView, playerNameLabel);
+                cardAndPlayer.setAlignment(Pos.CENTER);
+
+                playedCardsArea.getChildren().add(cardAndPlayer);
+            }
+        }
     }
 
     public void updateChat(String message) {

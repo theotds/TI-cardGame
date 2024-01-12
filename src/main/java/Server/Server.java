@@ -71,6 +71,8 @@ public class Server {
                     broadcastRoomStatus(roomName);
                 } else if (isChatMessage(message)) {
                     processChatMessage(message);
+                } else if (isPlayMessage(message)){
+                    processPlayMessage(message);
                 } else processClientMessage(clientSocket, message);
             }
         } catch (IOException e) {
@@ -80,6 +82,14 @@ public class Server {
                 clientWriters.remove(output);
             }
         }
+    }
+
+    private static void processPlayMessage(String message) {
+        System.out.println(message);
+    }
+
+    private static boolean isPlayMessage(String message) {
+        return message.startsWith("PLAY");
     }
 
     private static void processChatMessage(String message) {

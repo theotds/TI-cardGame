@@ -7,25 +7,25 @@ import static org.junit.jupiter.api.Assertions.*;
 class CardTest {
 
     @Test
-    void testToString() {
+    void testToStringAceOfClubs() {
         Card card = new Card(Card.Suit.CLUBS, Card.Rank.ACE);
         assertEquals("ACE of CLUBS", card.toString());
     }
 
     @Test
-    void testToString2() {
+    void testToStringAceOfSpades() {
         Card card = new Card(Card.Suit.SPADES, Card.Rank.ACE);
         assertEquals("ACE of SPADES", card.toString());
     }
 
     @Test
-    void testToString3() {
+    void testToStringAceOfHearts() {
         Card card = new Card(Card.Suit.HEARTS, Card.Rank.ACE);
         assertEquals("ACE of HEARTS", card.toString());
     }
 
     @Test
-    void testToString4() {
+    void testToStringAceOfDiamonds() {
         Card card = new Card(Card.Suit.DIAMONDS, Card.Rank.ACE);
         assertEquals("ACE of DIAMONDS", card.toString());
     }

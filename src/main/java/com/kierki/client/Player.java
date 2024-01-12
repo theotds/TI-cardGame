@@ -9,6 +9,7 @@ public class Player {
     private String name;
     private int score;
     private final List<Card> hand;
+    private Card playedCard;
 
     public Player(String name) {
         this.name = name;
@@ -39,6 +40,13 @@ public class Player {
     // Method to update the player's score
     public void updateScore(int points) {
         this.score += points;
+    }
+
+    public void setPlayedCard(Card card) {
+        playedCard = card;
+    }
+    public Card getPlayedCard() {
+        return playedCard;
     }
 
     // Additional methods related to player actions can be added here

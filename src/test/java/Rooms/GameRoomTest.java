@@ -8,20 +8,20 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameRoomTest {
 
     @Test
-    void getAmountOfPlayers() {
+    void getAmountOfPlayers_0Players() {
         GameRoom room = new GameRoom("roomName");
         assertEquals(0, room.getAmountOfPlayers());
     }
 
     @Test
-    void getAmountOfPlayers1() {
+    void getAmountOfPlayers_1Player() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         assertEquals(1, room.getAmountOfPlayers());
     }
 
     @Test
-    void getAmountOfPlayers2() {
+    void getAmountOfPlayers_2Player() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         room.addPlayer(new Player("player2"));
@@ -29,7 +29,7 @@ class GameRoomTest {
     }
 
     @Test
-    void isFull() {
+    void isFullTrue() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         room.addPlayer(new Player("player2"));
@@ -39,7 +39,7 @@ class GameRoomTest {
     }
 
     @Test
-    void isFull2() {
+    void isFullFalse() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         room.addPlayer(new Player("player2"));
@@ -48,7 +48,7 @@ class GameRoomTest {
     }
 
     @Test
-    void canJoin() {
+    void canJoinWhenFullRoom() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         room.addPlayer(new Player("player2"));
@@ -58,7 +58,7 @@ class GameRoomTest {
     }
 
     @Test
-    void canJoin2() {
+    void canJoinWhenOnePlaceLeft() {
         GameRoom room = new GameRoom("roomName");
         room.addPlayer(new Player("player1"));
         room.addPlayer(new Player("player2"));

@@ -1,10 +1,11 @@
 package Rooms;
 
+import Game.Card;
 import Game.Deck;
+import Game.PlayedCardInfo;
 import com.kierki.client.Player;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GameRoom {
     private static final int NUMBER_OF_CARDS_PER_PLAYER = 13;
@@ -14,6 +15,7 @@ public class GameRoom {
     private final Deck deck;
     private boolean gameStarted;
     private int amountOfPlayers;
+    private final List<PlayedCardInfo> playedCards;
 
     public GameRoom(String roomName) {
         this.roomName = roomName;
@@ -21,6 +23,7 @@ public class GameRoom {
         this.gameStarted = false;
         this.amountOfPlayers = 0;
         this.deck = new Deck();
+        this.playedCards = new ArrayList<>();
     }
 
     public void setGameStarted(boolean gameStarted) {
@@ -87,5 +90,23 @@ public class GameRoom {
                 player.getHand().add(deck.dealCard());
             }
         }
+    }
+
+    public void setPlayedCards() {
+        for (Player player : players) {
+            if (player.getPlayedCard() != null) {
+                Card card = player.getPlayedCard();
+                playedCards.add(new PlayedCardInfo(card, player)); // Add the card and player to the playedCards map
+                player.getHand().remove(card);
+            }
+        }
+    }
+
+    public void resetPlayedCards() {
+        playedCards.clear();
+    }
+
+    public List<PlayedCardInfo> getPlayedCards() {
+        return playedCards;
     }
 }
