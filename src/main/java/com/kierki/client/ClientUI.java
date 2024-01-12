@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.kierki.client.Consts.*;
+
 // TODO - SERVER-CLIENT, GAME UI, JOIN ROOM, PLAYER, JOIN AFTER CREATE
 
 public class ClientUI extends Application {
@@ -50,7 +52,7 @@ public class ClientUI extends Application {
         for (Card card : player.getHand()) {
             System.out.println(card.toString());
             ImageView cardView = new ImageView(new Image(card.getImagePath()));
-            cardView.setFitWidth(90);
+            cardView.setFitWidth(CARD_WIDTH);
             cardView.setPreserveRatio(true);
             playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
         }
@@ -318,9 +320,9 @@ public class ClientUI extends Application {
 
         // Create the room name label and field.
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
+        grid.setHgap(PADDING);
+        grid.setVgap(PADDING);
+        grid.setPadding(new Insets(20, 150, PADDING, PADDING));
 
         TextField roomName = new TextField();
         roomName.setPromptText("Nazwa pokoju");
@@ -440,7 +442,7 @@ public class ClientUI extends Application {
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
         borderPane.setRight(chatArea); // Assuming chatArea is defined
 
-        return new Scene(borderPane, 1860, 980);
+        return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
     }
 
     public void updateChat(String message) {
