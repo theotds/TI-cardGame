@@ -95,7 +95,8 @@ public class Server {
             if (room != null) {
 
                 Player player = room.findPlayer(playerName);
-                if (player != null) {
+                if (player != null && room.getPlayerMove() == player.getPlayerIDinRoom()) {
+                    room.nextPlayerMove();
                     String sendMessage = "PLAY:" + roomName + ":" + playerName + ":" + cardName;
                     sendMessageToClient(sendMessage);
                 } else {

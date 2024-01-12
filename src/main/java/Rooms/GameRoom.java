@@ -18,7 +18,10 @@ public class GameRoom {
     private final List<PlayedCardInfo> playedCards;
     private int round;
     private int playerStarting;
+    private int playerMove;
     private int battle;
+    private Card.Suit leadSuit; // The suit of the first card played in this round
+    private Card.Suit trumpSuit; // The trump suit, if any
 
     public GameRoom(String roomName) {
         this.roomName = roomName;
@@ -30,6 +33,7 @@ public class GameRoom {
         this.round = 0;
         this.playerStarting = 1;
         this.battle = 1;
+        this.playerMove = playerStarting;
     }
 
     public void setGameStarted(boolean gameStarted) {
@@ -137,31 +141,55 @@ public class GameRoom {
         this.round += 1;
     }
 
-    public void startRound(int roundNumber) {
-        switch (roundNumber) {
-            case 1:
-                //  rozdanie 1. -- bez lew; -20 pkt. za każdą wziętą lewę (wygrana w pojedynku)
-                break;
-            case 2:
-                //  rozdanie 2. -- bez kierów; -20 pkt. za każdego wziętego kiera
-                break;
-            case 3:
-                //  rozdanie 3. -- bez dam; -60 pkt. za każdą wziętą damę
-                break;
-            case 4:
-                //  rozdanie 4. -- bez panów; -30 pkt. za każdego wziętego króla lub waleta
-                break;
-            case 5:
-                //  rozdanie 5. -- bez króla kier, -150 za jego wzięcie
-                break;
-            case 6:
-                //  rozdanie 6. -- bez siódmej i ostatniej lewy, po -75 pkt. za każdą z nich
-                break;
-            case 7:
-                //  rozdanie 7. (tzw. rozbójnik) -- wszystkie ograniczenia z rozdań 1-6.
-                break;
+    public Player playBattle() {
+        PlayedCardInfo winningCardInfo = null;
+
+        for (PlayedCardInfo cardInfo : playedCards) {
+            if (isWinningCard(cardInfo, winningCardInfo)) {
+                winningCardInfo = cardInfo;
+            }
         }
-        // Additional setup for the round
+
+        if (winningCardInfo != null) {
+            return findPlayerByName(winningCardInfo.getPlayer());
+        }
+        return null;
+    }
+
+    private boolean isWinningCard(PlayedCardInfo candidate, PlayedCardInfo currentWinner) {
+        if (currentWinner == null) {
+            return true; // First card is always temporarily the winner
+        }
+
+        Card candidateCard = candidate.getCard();
+        Card winningCard = currentWinner.getCard();
+
+        // Check for trump suit first
+        if (trumpSuit != null) {
+            if (candidateCard.getSuit() == trumpSuit && winningCard.getSuit() != trumpSuit) {
+                return true;
+            } else if (candidateCard.getSuit() == trumpSuit && winningCard.getSuit() == trumpSuit) {
+                return candidateCard.getRank().compareTo(winningCard.getRank()) > 0;
+            }
+        }
+
+        // If no trump suit or both cards are not trump, check the lead suit
+        if (candidateCard.getSuit() == leadSuit) {
+            if (winningCard.getSuit() != leadSuit || candidateCard.getRank().compareTo(winningCard.getRank()) > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Player findPlayerByName(String playerName) {
+        for (Player player : players) {
+            if (player.getName().equals(playerName)) {
+                return player;
+            }
+        }
+        return null; // Player not found
     }
 
     public int countPoints(int roundNumber) {
@@ -257,4 +285,26 @@ public class GameRoom {
         return count;
     }
 
+    public int getPlayerStarting() {
+        return playerStarting;
+    }
+
+    public void setPlayerStarting(int playerStarting) {
+        this.playerStarting = playerStarting;
+    }
+
+    public int getPlayerMove() {
+        return playerMove;
+    }
+
+    public void setPlayerMove(int playerMove) {
+        this.playerMove = playerMove;
+    }
+
+    public void nextPlayerMove() {
+        playerMove++;
+        if (playerMove > 4) {
+            playerMove = 1;
+        }
+    }
 }
