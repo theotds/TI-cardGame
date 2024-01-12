@@ -28,6 +28,8 @@ import static com.kierki.client.Consts.*;
 
 public class ClientUI extends Application {
     private static final int MAX_PLAYERS = 4;
+    public static ImageView lastClickedCardView = null;
+    public static Card lastClickedCard = null;
     private static ClientUI instance;
     private static HBox playerHandArea;
     private static GameRoom playingRoom;
@@ -37,7 +39,6 @@ public class ClientUI extends Application {
     private Stage window;
     private ListView<String> roomList;
     private GameClient client;
-
     private TextArea chatMessages;
 
     public static ClientUI getInstance() {
@@ -54,6 +55,18 @@ public class ClientUI extends Application {
             ImageView cardView = new ImageView(new Image(card.getImagePath()));
             cardView.setFitWidth(CARD_WIDTH);
             cardView.setPreserveRatio(true);
+            cardView.setOnMouseClicked(event -> {
+                if (lastClickedCardView != null) {
+                    lastClickedCardView.setTranslateY(0);
+                    lastClickedCard.unSelect();
+                }
+                lastClickedCard = card;
+                card.select();
+                cardView.setTranslateY(-20); // Adjust the Y position to move the card downwards
+                lastClickedCardView = cardView;
+                card.select();
+            });
+
             playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
         }
         if (player.getHand().isEmpty()) {
@@ -428,8 +441,14 @@ public class ClientUI extends Application {
             chatInput.clear();
         });
 
-        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton);
-        chatArea.setPrefWidth(300);
+        Button confirmButton = createStyledButton("Confirm", false);
+        confirmButton.setOnAction(event -> {
+            // Actions to perform when the confirm button is clicked
+            // For example, confirm the selected card, send a message to the server, etc.
+        });
+
+        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, confirmButton);
+        chatArea.setPrefWidth(CHAT_SIZE);
 
         playerHandArea = new HBox(10); // Horizontal box with spacing
         playerHandArea.setPadding(new Insets(10));
