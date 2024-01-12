@@ -153,6 +153,7 @@ public class Server {
             Player player = new Player(extractPlayerName(message));
             System.out.println(player.getName() + " joined game " + room.getName());
             room.addPlayer(player);
+            player.setPlayerIDinRoom(room.getAmountOfPlayers());
             gameRooms.putIfAbsent(roomName, room);
             if (room.isFull()) {
                 room.dealCardsToPlayers();  // Deal cards to players
