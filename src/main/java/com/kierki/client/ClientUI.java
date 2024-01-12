@@ -20,9 +20,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
+import java.security.cert.PolicyNode;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.kierki.client.Consts.*;
@@ -44,6 +43,8 @@ public class ClientUI extends Application {
     private TextArea chatMessages;
     private static Card selectedCard;
     private VBox playedCardsArea;
+    private Map<String, Label> playerScoreLabels = new HashMap<>(); // Map to store player score labels for easy update
+    private VBox scoreboard;
 
     public static ClientUI getInstance() {
         return instance;
@@ -431,6 +432,13 @@ public class ClientUI extends Application {
         chatMessages.setEditable(false);
         TextField chatInput = new TextField();
 
+        VBox scoreboardContainer = new VBox(10);
+        Label scoreboardTitle = new Label("scoreboard:");
+        scoreboard = new VBox(10); // 10 is the spacing between elements
+
+        scoreboard.setAlignment(Pos.CENTER);
+        scoreboardContainer.getChildren().addAll(scoreboardTitle, scoreboard);
+
         Button sendMessageButton = new Button("Send");
         sendMessageButton.setOnAction(event -> {
             // TODO: Implement send message action
@@ -462,7 +470,7 @@ public class ClientUI extends Application {
         // Style the playedCardsArea if necessary
 
 
-        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, confirmButton);
+        chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, scoreboardContainer, confirmButton);
         chatArea.setPrefWidth(CHAT_SIZE);
 
         playerHandArea = new HBox(10); // Horizontal box with spacing
@@ -476,6 +484,20 @@ public class ClientUI extends Application {
         borderPane.setRight(chatArea); // Assuming chatArea is defined
 
         return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
+    }
+
+    private void addPlayerToScoreboard(String playerName) {
+        Label scoreLabel = new Label(playerName + ": 0");
+        playerScoreLabels.put(playerName, scoreLabel);
+        scoreboard.getChildren().add(scoreLabel);
+    }
+
+    public void updateScores(String playerName, int score) {
+        Label scoreLabel = playerScoreLabels.get(playerName);
+        if (scoreLabel != null) {
+            scoreLabel.setText(playerName + ": " + score);
+        }
+
     }
 
     private void updatePlayedCards(PlayedCardInfo cardInfo) {
@@ -522,7 +544,7 @@ public class ClientUI extends Application {
                 PlayedCardInfo cardInfo = new PlayedCardInfo(card, playerNick);
                 updatePlayedCards(cardInfo);
                 if (playerNick.equals(player.getName())) {
-                    player.removeCard(rank,suit);
+                    player.removeCard(rank, suit);
                     selectedCard = null;
                     updatePlayerHandArea();
                 }
