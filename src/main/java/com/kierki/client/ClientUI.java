@@ -41,7 +41,7 @@ public class ClientUI extends Application {
     private GameClient client;
     private TextArea chatMessages;
     private static Card selectedCard;
-    private HBox playedCardsArea;
+    private VBox playedCardsArea;
 
     public static ClientUI getInstance() {
         return instance;
@@ -457,9 +457,9 @@ public class ClientUI extends Application {
             }
         });
 
-        playedCardsArea = new HBox(10);
+        playedCardsArea = new VBox(10);
         playedCardsArea.setPadding(new Insets(10));
-        playedCardsArea.setAlignment(Pos.TOP_CENTER);
+        playedCardsArea.setAlignment(Pos.BASELINE_CENTER);
         // Style the playedCardsArea if necessary
 
         updatePlayedCards(room);
