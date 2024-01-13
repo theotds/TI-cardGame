@@ -209,7 +209,9 @@ public class ClientUI extends Application {
         VBox layout = new VBox(LAYOUT_SPACING);
         configureLayout(layout);
 
-        Label titleLabel = new Label(player.getName() + "Wybierz pokój do gry");
+        window.setTitle("Wybór pokoju - " + player.getName());
+
+        Label titleLabel = new Label("Wybierz pokój do gry");
         titleLabel.setStyle("-fx-font-size: 20px;");
 
         roomList = new ListView<>();
