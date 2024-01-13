@@ -22,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.security.cert.PolicyNode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,7 +29,6 @@ import static com.kierki.client.Consts.*;
 
 
 public class ClientUI extends Application {
-    private static final int MAX_PLAYERS = 4;
     public static ImageView lastClickedCardView = null;
     private static ClientUI instance;
     private static HBox playerHandArea;
@@ -64,9 +62,9 @@ public class ClientUI extends Application {
             cardView.setPreserveRatio(true);
             cardView.setOnMouseClicked(event -> {
                 if (lastClickedCardView != null) {
-                    lastClickedCardView.setTranslateY(0);
+                    lastClickedCardView.setTranslateY(DEFAULT_POSITION);
                 }
-                cardView.setTranslateY(-20);
+                cardView.setTranslateY(CARD_TRANSLATE_Y);
                 selectedCard = card;
                 lastClickedCardView = cardView;
             });
@@ -117,7 +115,7 @@ public class ClientUI extends Application {
     }
 
     private Scene buildLoginScene() {
-        VBox layout = new VBox(15);
+        VBox layout = new VBox(LAYOUT_SPACING);
         configureLayout(layout);
 
         // Elementy ekranu logowania
@@ -126,7 +124,7 @@ public class ClientUI extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Hasło");
 
-        HBox switchBox = new HBox(15);
+        HBox switchBox = new HBox(LAYOUT_SPACING);
         switchBox.setAlignment(Pos.CENTER);
         Button switchToLogin = createStyledButton("Logowanie", true);
         Button switchToRegister = createStyledButton("Rejestracja", false);
@@ -138,14 +136,14 @@ public class ClientUI extends Application {
 
         layout.getChildren().addAll(switchBox, usernameInput, passwordInput, confirmButton);
 
-        return new Scene(layout, 600, 400);
+        return new Scene(layout, BASIC_SCENE_WIDTH, BASIC_SCENE_HEIGHT);
     }
 
     private boolean login(String username, String password) {
         boolean logged = authentication.loginUser(username, password);
         if (logged) {
             try {
-                this.client = new GameClient(12345);
+                this.client = new GameClient(SERVER_PORT);
                 player = new Player(username);
                 requestRoomList();
 
@@ -164,7 +162,7 @@ public class ClientUI extends Application {
     }
 
     private Scene buildRegisterScene() {
-        VBox layout = new VBox(15);
+        VBox layout = new VBox(LAYOUT_SPACING);
         configureLayout(layout);
 
         // Elementy ekranu rejestracji
@@ -173,7 +171,7 @@ public class ClientUI extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Hasło");
 
-        HBox switchBox = new HBox(15);
+        HBox switchBox = new HBox(LAYOUT_SPACING);
         switchBox.setAlignment(Pos.CENTER);
         Button switchToLogin = createStyledButton("Logowanie", false);
         switchToLogin.setOnAction(e -> window.setScene(buildLoginScene()));
@@ -185,7 +183,7 @@ public class ClientUI extends Application {
 
         layout.getChildren().addAll(switchBox, usernameInput, passwordInput, confirmButton);
 
-        return new Scene(layout, 600, 400);
+        return new Scene(layout, BASIC_SCENE_WIDTH, BASIC_SCENE_HEIGHT);
     }
 
     private void register(TextField usernameInput, PasswordField passwordInput) {
@@ -208,7 +206,7 @@ public class ClientUI extends Application {
     }
 
     private Scene buildRoomSelectionScene() {
-        VBox layout = new VBox(15);
+        VBox layout = new VBox(LAYOUT_SPACING);
         configureLayout(layout);
 
         Label titleLabel = new Label(player.getName() + "Wybierz pokój do gry");
@@ -227,7 +225,7 @@ public class ClientUI extends Application {
 
         layout.getChildren().addAll(titleLabel, roomList, joinRoomButton, createRoomButton, showRulesButton);
 
-        return new Scene(layout, 600, 400);
+        return new Scene(layout, BASIC_SCENE_WIDTH, BASIC_SCENE_HEIGHT);
     }
 
     private void showGameRules() {
@@ -240,7 +238,7 @@ public class ClientUI extends Application {
         TextArea textArea = new TextArea(rules);
         textArea.setEditable(false);
         textArea.setWrapText(true);
-        textArea.setPrefHeight(600);
+        textArea.setPrefHeight(BASIC_SCENE_WIDTH);
 
         rulesAlert.getDialogPane().setContent(textArea);
         rulesAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
@@ -398,22 +396,20 @@ public class ClientUI extends Application {
         window.setTitle("Pokój: " + room.getName() + " gracz: " + player.getName());
         // Game Area
         VBox gameArea = new VBox();
-        gameArea.setPadding(new Insets(10));
+        gameArea.setPadding(new Insets(PADDING));
         gameArea.setStyle("-fx-background-color: lightblue;");
 
-        BorderPane gameLayout = new BorderPane();
-
         // Chat Area
-        VBox chatArea = new VBox(10);
-        chatArea.setPadding(new Insets(10));
+        VBox chatArea = new VBox(PADDING);
+        chatArea.setPadding(new Insets(PADDING));
         chatMessages = new TextArea();
         chatMessages.setEditable(false);
         TextField chatInput = new TextField();
 
-        VBox scoreboardContainer = new VBox(10);
+        VBox scoreboardContainer = new VBox(PADDING);
         Label scoreboardTitle = new Label("scoreboard:");
-        scoreboard = new VBox(10);
-        scoreboard = new VBox(10);
+        scoreboard = new VBox(PADDING);
+        scoreboard = new VBox(PADDING);
 
         scoreboard.setAlignment(Pos.CENTER);
         scoreboardContainer.getChildren().addAll(scoreboardTitle, scoreboard);
@@ -442,16 +438,16 @@ public class ClientUI extends Application {
             }
         });
 
-        playedCardsArea = new HBox(10);
-        playedCardsArea.setPadding(new Insets(10));
+        playedCardsArea = new HBox(PADDING);
+        playedCardsArea.setPadding(new Insets(PADDING));
         playedCardsArea.setAlignment(Pos.CENTER);
 
 
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, scoreboardContainer, confirmButton);
         chatArea.setPrefWidth(CHAT_SIZE);
 
-        playerHandArea = new HBox(10);
-        playerHandArea.setPadding(new Insets(10));
+        playerHandArea = new HBox(PADDING);
+        playerHandArea.setPadding(new Insets(PADDING));
         playerHandArea.setAlignment(Pos.BOTTOM_CENTER);
         updatePlayerHandArea();
 
@@ -567,7 +563,7 @@ public class ClientUI extends Application {
             String winnerName = parts[2];
             String score = parts[3];
             if (roomName.equals(playingRoom.getName())) {
-                VBox endScreenLayout = new VBox(10);
+                VBox endScreenLayout = new VBox(PADDING);
                 endScreenLayout.setAlignment(Pos.CENTER);
 
                 Label winnerLabel = new Label("Winner: " + winnerName);

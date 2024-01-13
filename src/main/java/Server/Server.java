@@ -18,17 +18,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.kierki.client.Consts.SERVER_PORT;
+import static com.kierki.client.Consts.THREAD_NUMBER;
+
 public class Server {
     // list for all rooms
     private static final HashMap<String, GameRoom> gameRooms = new HashMap<>();
     // clientWriters is list of writers for all connected clients
     private static final List<PrintWriter> clientWriters = new CopyOnWriteArrayList<>();
-    private static final int PORT = 12345;
-    private static final ExecutorService clientHandlingPool = Executors.newFixedThreadPool(8);
+    private static final ExecutorService clientHandlingPool = Executors.newFixedThreadPool(THREAD_NUMBER);
 
     public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Game Server is running in port " + PORT);
+        try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+            System.out.println("Game Server is running in port " + SERVER_PORT);
 
             while (true) {
                 try {

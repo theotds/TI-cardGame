@@ -6,8 +6,9 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.kierki.client.Consts.FILE_PATH;
+
 public class FileUserManager {
-    private static final String FILE_PATH = "C:/TI-java/kierki/src/main/java/users.txt";
 
     public FileUserManager() {
         try {

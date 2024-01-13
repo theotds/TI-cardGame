@@ -1,5 +1,7 @@
 package Game;
 
+import static com.kierki.client.Consts.CARDS_PATH;
+
 public class Card {
 
     private final Suit suit;
@@ -15,7 +17,7 @@ public class Card {
     private String determineImagePath(Suit suit, Rank rank) {
         String rankName = rank.name().toLowerCase();
         String suitName = suit.name().toLowerCase();
-        return "C:/TI-java/kierki/src/main/Images/Cards/" + suitName + "/" + rankName + ".png";
+        return CARDS_PATH + suitName + "/" + rankName + ".png";
     }
 
     public String getImagePath() {
