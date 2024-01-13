@@ -1,5 +1,7 @@
 package Game;
 
+import Game.Rank;
+
 public class Card {
 
     private final Suit suit;
@@ -49,11 +51,5 @@ public class Card {
         return this.selected;
     }
 
-    public enum Suit {
-        HEARTS, DIAMONDS, CLUBS, SPADES
-    }
 
-    public enum Rank {
-        ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING
-    }
 }

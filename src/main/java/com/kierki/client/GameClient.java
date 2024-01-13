@@ -72,6 +72,10 @@ public class GameClient {
                 ClientUI.getInstance().updateChat(message);
             } else if (message.startsWith("PLAY")) {
                 ClientUI.getInstance().updatePlayedCardsFromServer(message);
+            } else if (message.startsWith("SCOREBOARDADD")) {
+                ClientUI.getInstance().addPlayerToScoreboard(message);
+            }else if (message.startsWith("SCOREBOARD")) {
+                ClientUI.getInstance().updateScores(message);
             }
         });
     }

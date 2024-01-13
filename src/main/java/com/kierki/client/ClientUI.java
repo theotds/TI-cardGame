@@ -2,6 +2,8 @@ package com.kierki.client;
 
 import Game.Card;
 import Game.PlayedCardInfo;
+import Game.Rank;
+import Game.Suit;
 import Rooms.GameRoom;
 import Rooms.RoomManager;
 import javafx.application.Application;
@@ -42,7 +44,7 @@ public class ClientUI extends Application {
     private GameClient client;
     private TextArea chatMessages;
     private static Card selectedCard;
-    private VBox playedCardsArea;
+    private HBox playedCardsArea;
     private Map<String, Label> playerScoreLabels = new HashMap<>(); // Map to store player score labels for easy update
     private VBox scoreboard;
 
@@ -93,11 +95,11 @@ public class ClientUI extends Application {
 
     private static Card createCardFromName(String suit, String rank) {
         // Convert string parts to Suit and Rank enums
-        Card.Suit suitCard;
-        Card.Rank rankCard;
+        Suit suitCard;
+        Rank rankCard;
         try {
-            suitCard = Card.Suit.valueOf(suit);
-            rankCard = Card.Rank.valueOf(rank);
+            suitCard = Suit.valueOf(suit);
+            rankCard = Rank.valueOf(rank);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid suit or rank in card name");
         }
@@ -421,9 +423,11 @@ public class ClientUI extends Application {
 
         window.setTitle("Pokój: " + room.getName() + " gracz: " + player.getName());
         // Game Area
-        HBox gameArea = new HBox();
+        VBox gameArea = new VBox();
         gameArea.setPadding(new Insets(10));
         gameArea.setStyle("-fx-background-color: lightblue;");
+
+        BorderPane gameLayout = new BorderPane();
 
         // Chat Area
         VBox chatArea = new VBox(10);
@@ -464,20 +468,22 @@ public class ClientUI extends Application {
             }
         });
 
-        playedCardsArea = new VBox(10);
+        playedCardsArea = new HBox(10);
         playedCardsArea.setPadding(new Insets(10));
-        playedCardsArea.setAlignment(Pos.BASELINE_CENTER);
+        playedCardsArea.setAlignment(Pos.CENTER);
         // Style the playedCardsArea if necessary
 
 
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, scoreboardContainer, confirmButton);
         chatArea.setPrefWidth(CHAT_SIZE);
 
-        playerHandArea = new HBox(10); // Horizontal box with spacing
+        playerHandArea = new HBox(10);
         playerHandArea.setPadding(new Insets(10));
-        playerHandArea.setAlignment(Pos.BOTTOM_CENTER); // Center align the cards
+        playerHandArea.setAlignment(Pos.BOTTOM_CENTER);
         updatePlayerHandArea();
-        gameArea.getChildren().addAll(playerHandArea, playedCardsArea);
+
+        gameArea.setAlignment(Pos.BOTTOM_CENTER);
+        gameArea.getChildren().addAll(playedCardsArea,playerHandArea);
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
@@ -486,16 +492,36 @@ public class ClientUI extends Application {
         return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
     }
 
-    private void addPlayerToScoreboard(String playerName) {
-        Label scoreLabel = new Label(playerName + ": 0");
-        playerScoreLabels.put(playerName, scoreLabel);
-        scoreboard.getChildren().add(scoreLabel);
+    public void addPlayerToScoreboard(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 4) {
+            String roomName = parts[1];
+            String playerName = parts[2];
+            String score = parts[3];
+            if (roomName.equals(playingRoom.getName())) {
+                Platform.runLater(() -> {
+                    Label scoreLabel = new Label(playerName + ": "+score);
+                    playerScoreLabels.put(playerName, scoreLabel);
+                    scoreboard.getChildren().add(scoreLabel);
+                });
+            }
+        }
     }
 
-    public void updateScores(String playerName, int score) {
-        Label scoreLabel = playerScoreLabels.get(playerName);
-        if (scoreLabel != null) {
-            scoreLabel.setText(playerName + ": " + score);
+    public void updateScores(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 4) {
+            String roomName = parts[1];
+            String playerName = parts[2];
+            String score = parts[3];
+            if (roomName.equals(playingRoom.getName())) {
+                Platform.runLater(() -> {
+                    Label scoreLabel = playerScoreLabels.get(playerName);
+                    if (scoreLabel != null) {
+                        scoreLabel.setText(playerName + ": " + score);
+                    }
+                });
+            }
         }
 
     }

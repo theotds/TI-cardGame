@@ -1,6 +1,8 @@
 package com.kierki.client;
 
 import Game.Card;
+import Game.Rank;
+import Game.Suit;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ public class Player {
     private List<Card> hand;
     private Card playedCard;
     private int playerIDinRoom;
+    private boolean turn;
 
     public Player(String name) {
         this.name = name;
@@ -56,8 +59,8 @@ public class Player {
         Iterator<Card> iterator = hand.iterator();
         while (iterator.hasNext()) {
             Card card = iterator.next();
-            Card.Rank rank = Card.Rank.valueOf(rankStr); // Convert string to enum
-            Card.Suit suit = Card.Suit.valueOf(suitStr); // Convert string to enum
+            Rank rank = Rank.valueOf(rankStr); // Convert string to enum
+            Suit suit = Suit.valueOf(suitStr); // Convert string to enum
 
             if (card.getRank() == rank && card.getSuit() == suit) {
                 iterator.remove();
@@ -72,6 +75,30 @@ public class Player {
 
     public void setPlayerIDinRoom(int playerIDinRoom) {
         this.playerIDinRoom = playerIDinRoom;
+    }
+
+    public void setTurn(boolean turn) {
+        this.turn = turn;
+    }
+
+    public boolean getTurn(boolean turn) {
+        return this.turn;
+    }
+
+    public Card getCardFromHand(String cardName) {
+        Iterator<Card> iterator = hand.iterator();
+        while (iterator.hasNext()) {
+            Card card = iterator.next();
+            if (card.toString().equals(cardName)) {
+                iterator.remove(); // Remove the card from the hand
+                return card;
+            }
+        }
+        return null;
+    }
+
+    public void addScore(int score) {
+        this.score += score;
     }
 
     // Additional methods related to player actions can be added here

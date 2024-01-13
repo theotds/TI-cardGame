@@ -1,8 +1,6 @@
 package Rooms;
 
-import Game.Card;
-import Game.Deck;
-import Game.PlayedCardInfo;
+import Game.*;
 import com.kierki.client.Player;
 
 import java.util.*;
@@ -20,8 +18,8 @@ public class GameRoom {
     private int playerStarting;
     private int playerMove;
     private int battle;
-    private Card.Suit leadSuit; // The suit of the first card played in this round
-    private Card.Suit trumpSuit; // The trump suit, if any
+    private Suit leadSuit; // The suit of the first card played in this round
+    private Suit trumpSuit; // The trump suit, if any
 
     public GameRoom(String roomName) {
         this.roomName = roomName;
@@ -30,10 +28,14 @@ public class GameRoom {
         this.amountOfPlayers = 0;
         this.deck = new Deck();
         this.playedCards = new ArrayList<>();
-        this.round = 0;
+        this.round = 1;
         this.playerStarting = 1;
         this.battle = 1;
         this.playerMove = playerStarting;
+    }
+
+    public boolean allCardsSet() {
+        return this.playedCards.size() == 4;
     }
 
     public void setGameStarted(boolean gameStarted) {
@@ -143,13 +145,14 @@ public class GameRoom {
 
     public Player playBattle() {
         PlayedCardInfo winningCardInfo = null;
-
+        this.battle += 1;
         for (PlayedCardInfo cardInfo : playedCards) {
             if (isWinningCard(cardInfo, winningCardInfo)) {
                 winningCardInfo = cardInfo;
+                trumpSuit = winningCardInfo.getCard().getSuit();
+                leadSuit = winningCardInfo.getCard().getSuit();
             }
         }
-
         if (winningCardInfo != null) {
             return findPlayerByName(winningCardInfo.getPlayer());
         }
@@ -166,17 +169,8 @@ public class GameRoom {
 
         // Check for trump suit first
         if (trumpSuit != null) {
-            if (candidateCard.getSuit() == trumpSuit && winningCard.getSuit() != trumpSuit) {
-                return true;
-            } else if (candidateCard.getSuit() == trumpSuit && winningCard.getSuit() == trumpSuit) {
+            if (candidateCard.getSuit() == leadSuit) {
                 return candidateCard.getRank().compareTo(winningCard.getRank()) > 0;
-            }
-        }
-
-        // If no trump suit or both cards are not trump, check the lead suit
-        if (candidateCard.getSuit() == leadSuit) {
-            if (winningCard.getSuit() != leadSuit || candidateCard.getRank().compareTo(winningCard.getRank()) > 0) {
-                return true;
             }
         }
 
@@ -194,8 +188,6 @@ public class GameRoom {
 
     public int countPoints(int roundNumber) {
         int points = 0;
-        int multiplyer;
-        int sub;
         switch (roundNumber) {
             case 7:
             case 1:
@@ -237,7 +229,7 @@ public class GameRoom {
         int multiplyer;
         int points;
         int sub;
-        multiplyer = countCardsOfRankOrSuit(Card.Rank.KING, Card.Suit.HEARTS);
+        multiplyer = countCardsOfRankOrSuit(Rank.KING, Suit.HEARTS);
         sub = -150;
         points = sub * multiplyer;
         return points;
@@ -247,8 +239,8 @@ public class GameRoom {
         int sub;
         int points;
         int multiplyer;
-        multiplyer = countCardsOfRankOrSuit(Card.Rank.KING, null);
-        multiplyer += countCardsOfRankOrSuit(Card.Rank.JACK, null);
+        multiplyer = countCardsOfRankOrSuit(Rank.KING, null);
+        multiplyer += countCardsOfRankOrSuit(Rank.JACK, null);
         sub = -30;
         points = sub * multiplyer;
         return points;
@@ -258,7 +250,7 @@ public class GameRoom {
         int multiplyer;
         int points;
         int sub;
-        multiplyer = countCardsOfRankOrSuit(Card.Rank.QUEEN, null);
+        multiplyer = countCardsOfRankOrSuit(Rank.QUEEN, null);
         sub = -60;
         points = sub * multiplyer;
         return points;
@@ -268,13 +260,13 @@ public class GameRoom {
         int points;
         int multiplyer;
         int sub;
-        multiplyer = countCardsOfRankOrSuit(null, Card.Suit.HEARTS);
+        multiplyer = countCardsOfRankOrSuit(null, Suit.HEARTS);
         sub = -20;
         points = sub * multiplyer;
         return points;
     }
 
-    public int countCardsOfRankOrSuit(Card.Rank desiredRank, Card.Suit desiredSuit) {
+    public int countCardsOfRankOrSuit(Rank desiredRank, Suit desiredSuit) {
         int count = 0;
         for (PlayedCardInfo cardInfo : playedCards) {
             Card card = cardInfo.getCard(); // Assuming getCard() returns a Card object
@@ -301,10 +293,27 @@ public class GameRoom {
         this.playerMove = playerMove;
     }
 
+    public Player getPlayerByIdInGame(int id) {
+        for (Player player : players) {
+            if (player.getPlayerIDinRoom() == id) {
+                return player;
+            }
+        }
+        return null;
+    }
+
     public void nextPlayerMove() {
+        Player currentPlayer = getPlayerByIdInGame(playerMove);
+        if (currentPlayer != null) {
+            currentPlayer.setTurn(false);
+        }
         playerMove++;
         if (playerMove > 4) {
             playerMove = 1;
+        }
+        Player nextPlayer = getPlayerByIdInGame(playerMove);
+        if (nextPlayer != null) {
+            nextPlayer.setTurn(true);
         }
     }
 }
