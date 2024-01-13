@@ -9,5 +9,5 @@ public class Consts {
     public static int GAMESCREEN_HEIGHT = 600;
     public static int GAMEAREA_WIDTH = GAMESCREEN_WIDTH - CHAT_SIZE;
     public static int CARD_WIDTH = (GAMEAREA_WIDTH / 13);
-    public static int ROUNDS = 7;
+    public static int ROUNDS = 1;
 }

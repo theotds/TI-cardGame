@@ -78,6 +78,8 @@ public class GameClient {
                 ClientUI.getInstance().updateScores(message);
             }else if (message.startsWith("REMOVEPLAYEDCARDS")) {
                 ClientUI.getInstance().removePlayedCards(message);
+            }else if (message.startsWith("FINISH")) {
+                ClientUI.getInstance().setFinish(message);
             }
         });
     }

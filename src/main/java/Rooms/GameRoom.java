@@ -326,4 +326,19 @@ public class GameRoom {
     public void refillDeck() {
         this.deck = new Deck();
     }
+
+    public Player getTheWinner() {
+        Player winner = null;
+        int highestScore = Integer.MIN_VALUE;
+
+        for (Player player : players) {
+            int playerScore = player.getScore(); // Assuming getScore() method exists in Player class
+            if (playerScore >= highestScore) {
+                highestScore = playerScore;
+                winner = player;
+            }
+        }
+
+        return winner;
+    }
 }

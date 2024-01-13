@@ -588,4 +588,33 @@ public class ClientUI extends Application {
             }
         }
     }
+
+    public void setFinish(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 4) {
+            String roomName = parts[1];
+            String winnerName = parts[2];
+            String score = parts[3];
+            if (roomName.equals(playingRoom.getName())) {
+                VBox endScreenLayout = new VBox(10);
+                endScreenLayout.setAlignment(Pos.CENTER);
+
+                Label winnerLabel = new Label("Winner: " + winnerName);
+                Label scoreLabel = new Label("Score: " + score);
+                Button exitButton = new Button("Exit");
+
+                endScreenLayout.getChildren().addAll(winnerLabel, scoreLabel, exitButton);
+
+                Scene endScene = new Scene(endScreenLayout, 300, 200); // Adjust size as needed
+                Platform.runLater(() -> {
+                    window.setScene(endScene);
+                });
+
+                // Handle button actions
+                exitButton.setOnAction(e -> {
+                    Platform.exit();
+                });
+            }
+        }
+    }
 }

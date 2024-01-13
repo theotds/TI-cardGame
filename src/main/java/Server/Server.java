@@ -2,6 +2,7 @@ package Server;
 
 import Game.Card;
 import Rooms.GameRoom;
+import com.kierki.client.Consts;
 import com.kierki.client.Player;
 
 import java.io.BufferedReader;
@@ -113,15 +114,17 @@ public class Server {
                             room.getPlayedCards().clear();
                             sendMessage = "REMOVEPLAYEDCARDS:" + room.getName();
                             sendMessageToClient(sendMessage);
-                            if(player.getHand().isEmpty()){
-                                if(room.getRound()==7){
-                                    System.out.println("finish");
+                            if (player.getHand().isEmpty()) {
+                                if (room.getRound() == Consts.ROUNDS) {
+                                    sendWinner(room);
+                                    return;
+                                } else {
+                                    room.nextRound();
+                                    room.refillDeck();
+                                    room.dealCardsToPlayers();  // Deal cards to players
+                                    sendEveryOnesCards(room);
+                                    sendRoundInfoToChat(roomName, room);
                                 }
-                                room.nextRound();
-                                room.refillDeck();
-                                room.dealCardsToPlayers();  // Deal cards to players
-                                sendEveryOnesCards(room);
-                                sendRoundInfoToChat(roomName, room);
                             }
                         } else {
                             room.nextPlayerMove();
@@ -138,6 +141,11 @@ public class Server {
                 System.out.println("Room not found: " + roomName);
             }
         }
+    }
+
+    private static void sendWinner(GameRoom room) {
+        Player winnerOfGame = room.getTheWinner();
+        sendMessageToClient("FINISH:" + room.getName() + ":" + winnerOfGame.getName() + ":" + winnerOfGame.getScore());
     }
 
     private static void sendUpdatedScoreBoard(GameRoom room) {
