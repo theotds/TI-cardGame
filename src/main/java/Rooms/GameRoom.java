@@ -1,6 +1,7 @@
 package Rooms;
 
 import Game.*;
+import com.kierki.client.Consts;
 import com.kierki.client.Player;
 
 import java.util.*;
@@ -70,6 +71,7 @@ public class GameRoom {
     public boolean isFull() {
         return amountOfPlayers >= MAX_PLAYERS;
     }
+
     public boolean hasGameStarted() {
         return gameStarted;
     }
@@ -190,33 +192,36 @@ public class GameRoom {
 
     public int countPoints(int roundNumber) {
         int points = 0;
-        switch (roundNumber) {
-            case 7:
-            case 1:
-                //  rozdanie 1. -- bez lew; -20 pkt. za każdą wziętą lewę (wygrana w pojedynku)
-                points = -20;
-                if (roundNumber != 7) break;
-            case 2:
-                //  rozdanie 2. -- bez kierów; -20 pkt. za każdego wziętego kiera
-                points = round2();
-                if (roundNumber != 7) break;
-            case 3:
-                //  rozdanie 3. -- bez dam; -60 pkt. za każdą wziętą damę
-                points = round3();
-                if (roundNumber != 7) break;
-            case 4:
-                //  rozdanie 4. -- bez panów; -30 pkt. za każdego wziętego króla lub waleta
-                points = round4();
-                if (roundNumber != 7) break;
-            case 5:
-                //  rozdanie 5. -- bez króla kier, -150 za jego wzięcie
-                points = round5();
-                if (roundNumber != 7) break;
-            case 6:
-                //  rozdanie 6. -- bez siódmej i ostatniej lewy, po -75 pkt. za każdą z nich
-                points = round6(points);
-                if (roundNumber != 7) break;
+        if (roundNumber < 1 || roundNumber > 7){
+            return 0;
         }
+            switch (roundNumber) {
+                case 7:
+                case 1:
+                    //  rozdanie 1. -- bez lew; -20 pkt. za każdą wziętą lewę (wygrana w pojedynku)
+                    points = -20;
+                    if (roundNumber != 7) break;
+                case 2:
+                    //  rozdanie 2. -- bez kierów; -20 pkt. za każdego wziętego kiera
+                    points = round2();
+                    if (roundNumber != 7) break;
+                case 3:
+                    //  rozdanie 3. -- bez dam; -60 pkt. za każdą wziętą damę
+                    points = round3();
+                    if (roundNumber != 7) break;
+                case 4:
+                    //  rozdanie 4. -- bez panów; -30 pkt. za każdego wziętego króla lub waleta
+                    points = round4();
+                    if (roundNumber != 7) break;
+                case 5:
+                    //  rozdanie 5. -- bez króla kier, -150 za jego wzięcie
+                    points = round5();
+                    if (roundNumber != 7) break;
+                case 6:
+                    //  rozdanie 6. -- bez siódmej i ostatniej lewy, po -75 pkt. za każdą z nich
+                    points = round6(points);
+                    if (roundNumber != 7) break;
+            }
         return points;
     }
 
