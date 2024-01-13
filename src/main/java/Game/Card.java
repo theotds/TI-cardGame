@@ -1,10 +1,13 @@
 package Game;
 
+import static com.kierki.client.Consts.CARDS_PATH;
+
 public class Card {
 
     private final Suit suit;
     private final Rank rank;
     private final String imagePath;
+
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
@@ -14,7 +17,7 @@ public class Card {
     private String determineImagePath(Suit suit, Rank rank) {
         String rankName = rank.name().toLowerCase();
         String suitName = suit.name().toLowerCase();
-        return "C:/TI-java/kierki/src/main/Images/Cards/" + suitName + "/" + rankName + ".png";
+        return CARDS_PATH + suitName + "/" + rankName + ".png";
     }
 
     public String getImagePath() {
@@ -34,11 +37,4 @@ public class Card {
         return rank + " of " + suit;
     }
 
-    public enum Suit {
-        HEARTS, DIAMONDS, CLUBS, SPADES
-    }
-
-    public enum Rank {
-        ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING
-    }
 }

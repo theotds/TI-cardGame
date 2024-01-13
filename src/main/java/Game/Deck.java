@@ -21,12 +21,11 @@ public class Deck {
 
     public void RestartDeck() {
         this.cards.clear();
-        for (Card.Suit suit : Card.Suit.values()) {
-            for (Card.Rank rank : Card.Rank.values()) {
+        for (Suit suit : Suit.values()) {
+            for (Rank rank : Rank.values()) {
                 this.cards.push(new Card(suit, rank));
             }
         }
     }
 
-    // Add any other deck-related methods here (e.g., size of deck, etc.)
 }

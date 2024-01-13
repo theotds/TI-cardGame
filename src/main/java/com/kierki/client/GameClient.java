@@ -55,10 +55,31 @@ public class GameClient {
 
     private void processServerMessage(String message) {
         Platform.runLater(() -> {
+            System.out.println(message);
             if (message.equals("START_LIST") || message.equals("EMPTY_LIST") || (message.startsWith("ROOM") && !message.startsWith("ROOM_UPDATE"))) {
                 ClientUI.getInstance().updateRoomList(message);
             } else if (message.startsWith("ROOM_UPDATE")) {
                 ClientUI.getInstance().updateRoomPlayerCount(message);
+            } else if (message.startsWith("CARDS:")) {
+                String[] parts = message.split(":");
+                if (parts.length >= 4) {
+                    String roomName = parts[1];
+                    String playerName = parts[2];
+                    String[] cards = parts[3].split(",");
+                    ClientUI.setPlayerCards(roomName, playerName, cards);
+                }
+            } else if (message.startsWith("CHAT")) {
+                ClientUI.getInstance().updateChat(message);
+            } else if (message.startsWith("PLAY")) {
+                ClientUI.getInstance().updatePlayedCardsFromServer(message);
+            } else if (message.startsWith("SCOREBOARDADD")) {
+                ClientUI.getInstance().addPlayerToScoreboard(message);
+            } else if (message.startsWith("SCOREBOARD")) {
+                ClientUI.getInstance().updateScores(message);
+            } else if (message.startsWith("REMOVEPLAYEDCARDS")) {
+                ClientUI.getInstance().removePlayedCards(message);
+            } else if (message.startsWith("FINISH")) {
+                ClientUI.getInstance().setFinish(message);
             }
         });
     }
