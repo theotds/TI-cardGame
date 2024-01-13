@@ -483,7 +483,7 @@ public class ClientUI extends Application {
         updatePlayerHandArea();
 
         gameArea.setAlignment(Pos.BOTTOM_CENTER);
-        gameArea.getChildren().addAll(playedCardsArea,playerHandArea);
+        gameArea.getChildren().addAll(playedCardsArea, playerHandArea);
 
         // Layout Setup
         borderPane.setCenter(gameArea); // Assuming gameArea is defined
@@ -500,7 +500,7 @@ public class ClientUI extends Application {
             String score = parts[3];
             if (roomName.equals(playingRoom.getName())) {
                 Platform.runLater(() -> {
-                    Label scoreLabel = new Label(playerName + ": "+score);
+                    Label scoreLabel = new Label(playerName + ": " + score);
                     playerScoreLabels.put(playerName, scoreLabel);
                     scoreboard.getChildren().add(scoreLabel);
                 });
@@ -574,6 +574,17 @@ public class ClientUI extends Application {
                     selectedCard = null;
                     updatePlayerHandArea();
                 }
+            }
+        }
+    }
+
+    public void removePlayedCards(String message) {
+        String[] parts = message.split(":");
+        if (parts.length == 2) {
+            String roomName = parts[1];
+            if (roomName.equals(playingRoom.getName())) {
+                playingRoom.getPlayedCards().clear();
+                playedCardsArea.getChildren().clear();
             }
         }
     }

@@ -105,18 +105,29 @@ public class Server {
                         if (room.allCardsSet()) {
                             Player winner = room.playBattle();
                             int score = room.countPoints(room.getRound());
-                            System.out.println(score + " " + winner.getName());
                             room.getPlayedCards().clear();
                             winner.addScore(score);
-                            //TODO - SEND MESSAGE SCOREBOARDUPDATE, AND UPDATE SCOREBOARD METHOD IN UI
+                            room.setPlayerStarting(winner.getPlayerIDinRoom());
+                            sendPlayersTurnToChat(room);
                             sendUpdatedScoreBoard(room);
-                            //TODO - SEND MESSAGE FINISH BATTLE
+                            room.getPlayedCards().clear();
+                            sendMessage = "REMOVEPLAYEDCARDS:" + room.getName();
+                            sendMessageToClient(sendMessage);
+                            if(player.getHand().isEmpty()){
+                                if(room.getRound()==7){
+                                    System.out.println("finish");
+                                }
+                                room.nextRound();
+                                room.refillDeck();
+                                room.dealCardsToPlayers();  // Deal cards to players
+                                sendEveryOnesCards(room);
+                                sendRoundInfoToChat(roomName, room);
+                            }
                         } else {
-                            System.out.println("not battle");
+                            room.nextPlayerMove();
                         }
-
-                        room.nextPlayerMove();
                         sendPlayersTurnToChat(room);
+
                     }
                 } else {
                     System.out.println("player not found: " + roomName);
@@ -179,14 +190,7 @@ public class Server {
             if (room.isFull()) {
                 addAllPlayersToScoreboard(room);
                 room.dealCardsToPlayers();  // Deal cards to players
-                for (Player roomPlayer : room.getPlayers()) {
-                    StringBuilder cardsMessage = new StringBuilder("CARDS:" + room.getName() + ":" + roomPlayer.getName() + ":");
-                    for (Card card : roomPlayer.getHand()) {
-                        // Assuming Card class has a toString or similar method to represent the card
-                        cardsMessage.append(card.toString()).append(",");
-                    }
-                    sendMessageToClient(cardsMessage.toString());
-                }
+                sendEveryOnesCards(room);
                 sendRoundInfoToChat(roomName, room);
                 sendPlayersTurnToChat(room);
 
@@ -195,8 +199,18 @@ public class Server {
         return roomName;
     }
 
+    private static void sendEveryOnesCards(GameRoom room) {
+        for (Player roomPlayer : room.getPlayers()) {
+            StringBuilder cardsMessage = new StringBuilder("CARDS:" + room.getName() + ":" + roomPlayer.getName() + ":");
+            for (Card card : roomPlayer.getHand()) {
+                cardsMessage.append(card.toString()).append(",");
+            }
+            sendMessageToClient(cardsMessage.toString());
+        }
+    }
+
     private static void addAllPlayersToScoreboard(GameRoom room) {
-        for (Player player : room.getPlayers()){
+        for (Player player : room.getPlayers()) {
             sendMessageToClient("SCOREBOARDADD:" + room.getName() + ":" + player.getName() + ":" + player.getScore());
         }
     }

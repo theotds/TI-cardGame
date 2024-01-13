@@ -10,7 +10,7 @@ public class GameRoom {
     private static final int MAX_PLAYERS = 4;
     private final String roomName;
     private final Set<Player> players;
-    private final Deck deck;
+    private Deck deck;
     private boolean gameStarted;
     private int amountOfPlayers;
     private final List<PlayedCardInfo> playedCards;
@@ -154,8 +154,14 @@ public class GameRoom {
             }
         }
         if (winningCardInfo != null) {
-            return findPlayerByName(winningCardInfo.getPlayer());
+            Player winner = findPlayerByName(winningCardInfo.getPlayer());
+            if (winner != null) {
+                this.playerMove = winner.getPlayerIDinRoom();
+                System.out.println(winner.getName() + " " + winner.getPlayerIDinRoom());
+            }
+            return winner;
         }
+
         return null;
     }
 
@@ -315,5 +321,9 @@ public class GameRoom {
         if (nextPlayer != null) {
             nextPlayer.setTurn(true);
         }
+    }
+
+    public void refillDeck() {
+        this.deck = new Deck();
     }
 }

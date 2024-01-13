@@ -76,6 +76,8 @@ public class GameClient {
                 ClientUI.getInstance().addPlayerToScoreboard(message);
             }else if (message.startsWith("SCOREBOARD")) {
                 ClientUI.getInstance().updateScores(message);
+            }else if (message.startsWith("REMOVEPLAYEDCARDS")) {
+                ClientUI.getInstance().removePlayedCards(message);
             }
         });
     }
