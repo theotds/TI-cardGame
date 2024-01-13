@@ -1,19 +1,15 @@
 package Game;
 
-import Game.Rank;
-
 public class Card {
 
     private final Suit suit;
     private final Rank rank;
     private final String imagePath;
-    private boolean selected;
 
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
         imagePath = determineImagePath(suit, rank);
-        selected = false;
     }
 
     private String determineImagePath(Suit suit, Rank rank) {
@@ -38,18 +34,5 @@ public class Card {
     public String toString() {
         return rank + " of " + suit;
     }
-
-    public void select() {
-        this.selected = true;
-    }
-
-    public void unSelect() {
-        this.selected = false;
-    }
-
-    public boolean isSelected() {
-        return this.selected;
-    }
-
 
 }

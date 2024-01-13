@@ -70,8 +70,6 @@ public class GameRoom {
     public boolean isFull() {
         return amountOfPlayers >= MAX_PLAYERS;
     }
-
-    // Method to check if the game has already started
     public boolean hasGameStarted() {
         return gameStarted;
     }
@@ -94,11 +92,10 @@ public class GameRoom {
         }
     }
 
-    // Method to deal cards to players when the room is full
     public void dealCardsToPlayers() {
-        deck.shuffle(); // Shuffle the deck before dealing
+        deck.shuffle();
         for (Player player : players) {
-            for (int i = 0; i < NUMBER_OF_CARDS_PER_PLAYER; i++) { // Assuming a fixed number of cards per player
+            for (int i = 0; i < NUMBER_OF_CARDS_PER_PLAYER; i++) {
                 player.getHand().add(deck.dealCard());
             }
         }
@@ -112,7 +109,7 @@ public class GameRoom {
         for (Player player : players) {
             if (player.getPlayedCard() != null) {
                 Card card = player.getPlayedCard();
-                playedCards.add(new PlayedCardInfo(card, player.getName())); // Add the card and player to the playedCards map
+                playedCards.add(new PlayedCardInfo(card, player.getName()));
                 player.getHand().remove(card);
             }
         }
@@ -124,7 +121,7 @@ public class GameRoom {
                 return player;
             }
         }
-        return null; // Return null if no player is found
+        return null;
     }
 
     public void resetPlayedCards() {
@@ -167,13 +164,12 @@ public class GameRoom {
 
     private boolean isWinningCard(PlayedCardInfo candidate, PlayedCardInfo currentWinner) {
         if (currentWinner == null) {
-            return true; // First card is always temporarily the winner
+            return true;
         }
 
         Card candidateCard = candidate.getCard();
         Card winningCard = currentWinner.getCard();
 
-        // Check for trump suit first
         if (trumpSuit != null) {
             if (candidateCard.getSuit() == leadSuit) {
                 return candidateCard.getRank().compareTo(winningCard.getRank()) > 0;
@@ -189,7 +185,7 @@ public class GameRoom {
                 return player;
             }
         }
-        return null; // Player not found
+        return null;
     }
 
     public int countPoints(int roundNumber) {
@@ -332,7 +328,7 @@ public class GameRoom {
         int highestScore = Integer.MIN_VALUE;
 
         for (Player player : players) {
-            int playerScore = player.getScore(); // Assuming getScore() method exists in Player class
+            int playerScore = player.getScore();
             if (playerScore >= highestScore) {
                 highestScore = playerScore;
                 winner = player;

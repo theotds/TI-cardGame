@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static com.kierki.client.Consts.*;
 
-// TODO - SERVER-CLIENT, GAME UI, JOIN ROOM, PLAYER, JOIN AFTER CREATE
 
 public class ClientUI extends Application {
     private static final int MAX_PLAYERS = 4;
@@ -45,7 +44,7 @@ public class ClientUI extends Application {
     private TextArea chatMessages;
     private static Card selectedCard;
     private HBox playedCardsArea;
-    private Map<String, Label> playerScoreLabels = new HashMap<>(); // Map to store player score labels for easy update
+    private Map<String, Label> playerScoreLabels = new HashMap<>();
     private VBox scoreboard;
 
     public static ClientUI getInstance() {
@@ -67,12 +66,12 @@ public class ClientUI extends Application {
                 if (lastClickedCardView != null) {
                     lastClickedCardView.setTranslateY(0);
                 }
-                cardView.setTranslateY(-20); // Adjust the Y position to move the card downwards
+                cardView.setTranslateY(-20);
                 selectedCard = card;
                 lastClickedCardView = cardView;
             });
 
-            playerHandArea.getChildren().add(cardView); // Add each card as an ImageView to the HBox
+            playerHandArea.getChildren().add(cardView);
         }
         if (player.getHand().isEmpty()) {
             System.out.println("empty");
@@ -81,20 +80,19 @@ public class ClientUI extends Application {
 
     public static void setPlayerCards(String roomName, String playerName, String[] cards) {
         if (roomName.equals(playingRoom.getName()) && playerName.equals(player.getName())) {
-            player.getHand().clear();  // Clear current hand
+            player.getHand().clear();
             for (String cardName : cards) {
                 String[] parts = cardName.split(" of ");
                 String rank = parts[0];
                 String suit = parts[1];
-                Card newCard = createCardFromName(suit, rank);  // Create a new Card object
-                player.getHand().add(newCard);  // Add the card to the player's hand
+                Card newCard = createCardFromName(suit, rank);
+                player.getHand().add(newCard);
             }
             updatePlayerHandArea();
         }
     }
 
     private static Card createCardFromName(String suit, String rank) {
-        // Convert string parts to Suit and Rank enums
         Suit suitCard;
         Rank rankCard;
         try {
@@ -119,7 +117,7 @@ public class ClientUI extends Application {
     }
 
     private Scene buildLoginScene() {
-        VBox layout = new VBox(15); // Zwiększony odstęp między elementami
+        VBox layout = new VBox(15);
         configureLayout(layout);
 
         // Elementy ekranu logowania
@@ -128,7 +126,7 @@ public class ClientUI extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Hasło");
 
-        HBox switchBox = new HBox(15); // Zwiększony odstęp między przyciskami
+        HBox switchBox = new HBox(15);
         switchBox.setAlignment(Pos.CENTER);
         Button switchToLogin = createStyledButton("Logowanie", true);
         Button switchToRegister = createStyledButton("Rejestracja", false);
@@ -140,7 +138,7 @@ public class ClientUI extends Application {
 
         layout.getChildren().addAll(switchBox, usernameInput, passwordInput, confirmButton);
 
-        return new Scene(layout, 600, 400); // Zwiększony rozmiar okna
+        return new Scene(layout, 600, 400);
     }
 
     private boolean login(String username, String password) {
@@ -154,8 +152,6 @@ public class ClientUI extends Application {
                 window.setScene(buildRoomSelectionScene());
             } catch (Exception e) {
                 e.printStackTrace();
-                //TODO -ERROR
-                // Handle connection error, such as showing an error message to the user
             }
         }
         return logged;
@@ -168,7 +164,7 @@ public class ClientUI extends Application {
     }
 
     private Scene buildRegisterScene() {
-        VBox layout = new VBox(15); // Zwiększony odstęp między elementami
+        VBox layout = new VBox(15);
         configureLayout(layout);
 
         // Elementy ekranu rejestracji
@@ -177,7 +173,7 @@ public class ClientUI extends Application {
         PasswordField passwordInput = new PasswordField();
         passwordInput.setPromptText("Hasło");
 
-        HBox switchBox = new HBox(15); // Zwiększony odstęp między przyciskami
+        HBox switchBox = new HBox(15);
         switchBox.setAlignment(Pos.CENTER);
         Button switchToLogin = createStyledButton("Logowanie", false);
         switchToLogin.setOnAction(e -> window.setScene(buildLoginScene()));
@@ -189,7 +185,7 @@ public class ClientUI extends Application {
 
         layout.getChildren().addAll(switchBox, usernameInput, passwordInput, confirmButton);
 
-        return new Scene(layout, 600, 400); // Zwiększony rozmiar okna
+        return new Scene(layout, 600, 400);
     }
 
     private void register(TextField usernameInput, PasswordField passwordInput) {
@@ -200,8 +196,8 @@ public class ClientUI extends Application {
         Button button = new Button(text);
         button.setDisable(isDisabled);
         button.setStyle("-fx-background-color: #ADD8E6; -fx-text-fill: black; -fx-font-size: 14px;");
-        button.setMinWidth(120); // Ustawienie minimalnej szerokości
-        button.setMinHeight(40); // Ustawienie minimalnej wysokości
+        button.setMinWidth(120);
+        button.setMinHeight(40);
         return button;
     }
 
@@ -211,7 +207,6 @@ public class ClientUI extends Application {
         layout.setStyle("-fx-background-color: #FFFFFF; -fx-font-size: 14px;");
     }
 
-    // TODO - status gry
     private Scene buildRoomSelectionScene() {
         VBox layout = new VBox(15);
         configureLayout(layout);
@@ -219,7 +214,7 @@ public class ClientUI extends Application {
         Label titleLabel = new Label(player.getName() + "Wybierz pokój do gry");
         titleLabel.setStyle("-fx-font-size: 20px;");
 
-        roomList = new ListView<>(); // Initialize the room list
+        roomList = new ListView<>();
 
         Button joinRoomButton = createStyledButton("Dołącz do pokoju", false);
         joinRoomButton.setOnAction(e -> joinSelectedRoom());
@@ -242,7 +237,6 @@ public class ClientUI extends Application {
         rulesAlert.setTitle("Zasady gry");
         rulesAlert.setHeaderText("Zasady gry");
 
-        // Use a TextArea inside a ScrollPane to display long text
         TextArea textArea = new TextArea(rules);
         textArea.setEditable(false);
         textArea.setWrapText(true);
@@ -259,7 +253,7 @@ public class ClientUI extends Application {
         try (FileInputStream fileStream = new FileInputStream(rulesPath); BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
-            e.printStackTrace(); // This will print more detailed error information
+            e.printStackTrace();
             return "Error: Unable to load game rules.";
         }
     }
@@ -271,16 +265,13 @@ public class ClientUI extends Application {
             int playerCount = Integer.parseInt(parts[2]);
 
             Platform.runLater(() -> {
-                // Assuming 'roomList' is a ListView or similar UI component
                 for (int i = 0; i < roomList.getItems().size(); i++) {
                     String item = roomList.getItems().get(i);
 
-                    // Assuming each item in the list is in the format "RoomName: X players"
                     if (item.startsWith(roomName)) {
-                        // Update the item with the new player count
                         roomList.getItems().set(i, roomName + "\t\t" + playerCount + "/" + MAX_PLAYERS);
                         roomManager.getRoom(roomName).setPlayerCount(playerCount);
-                        break;  // Exit the loop once the item is found and updated
+                        break;
                     }
                 }
             });
@@ -288,22 +279,15 @@ public class ClientUI extends Application {
     }
 
     public void updateRoomList(String message) {
-        // Run the update on the JavaFX Application Thread
         Platform.runLater(() -> {
-            // Check if the list is started, empty, or contains room details
             if (message.equals("START_LIST")) {
-                // Clear the current room list in the UI
                 clearRoomList();
             } else if (message.equals("EMPTY_LIST")) {
-                // Handle the case where there are no rooms available
-                // For example, show a message or clear the list
                 showNoRoomsAvailable();
             } else {
-                // Parse the message for room details and update the UI
                 String[] parts = message.split(" ");
                 if (parts.length == 2 && parts[0].equals("ROOM")) {
                     String roomDetails = parts[1];
-                    // Add this room to the UI list
                     if (!roomManager.doesRoomExist(roomDetails)) {
                         RoomManager.createRoom(roomDetails);
                     }
@@ -317,7 +301,6 @@ public class ClientUI extends Application {
         roomList.getItems().clear();
     }
 
-    //TODO - TEXT CHAT, VOICE CHAT, GAME LOGIC, ADD PLAYERS, EXIT,
 
     private void showNoRoomsAvailable() {
         roomList.getItems().clear();
@@ -328,15 +311,12 @@ public class ClientUI extends Application {
     }
 
     private void showCreateRoomDialog() {
-        // Create the custom dialog.
         Dialog<String> dialog = new Dialog<>();
         dialog.setTitle(player.getName() + "Stwórz nowy pokój");
 
-        // Set the button types.
         ButtonType createButtonType = new ButtonType("Stwórz", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
 
-        // Create the room name label and field.
         GridPane grid = new GridPane();
         grid.setHgap(PADDING);
         grid.setVgap(PADDING);
@@ -350,7 +330,6 @@ public class ClientUI extends Application {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Convert the result to a room name when the create button is clicked.
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == createButtonType) {
                 return roomName.getText();
@@ -358,10 +337,8 @@ public class ClientUI extends Application {
             return null;
         });
 
-        // Show the dialog and capture the result.
         Optional<String> result = dialog.showAndWait();
 
-        // Call method to handle room creation
         result.ifPresent(this::createRoom);
     }
 
@@ -378,14 +355,13 @@ public class ClientUI extends Application {
     private void joinSelectedRoom() {
         String selectedRoom = roomList.getSelectionModel().getSelectedItem();
         if (selectedRoom != null && !selectedRoom.trim().isEmpty()) {
-            String roomId = selectedRoom.split("\t\t")[0]; // Assuming the room ID is the first part of the list item
+            String roomId = selectedRoom.split("\t\t")[0];
             if (roomManager.doesRoomExist(roomId)) {
                 GameRoom room = roomManager.getRoom(roomId);
                 if (room != null && room.canJoin()) {
                     System.out.println("joining " + room.getName());
-                    room.addPlayer(player); // You need a Player object here
+                    room.addPlayer(player);
                     System.out.println(roomManager.getRoom(roomId).getAmountOfPlayers());
-                    // Proceed to game scene or lobby
                     try {
                         proceedToGame(room);
 
@@ -393,7 +369,6 @@ public class ClientUI extends Application {
                         System.out.println("card not found");
                     }
                 } else {
-                    // Room is full or game is in progress
                     showAlert("Cannot join room: " + roomId);
                 }
             } else {
@@ -414,8 +389,7 @@ public class ClientUI extends Application {
     }
 
     private void showAlert(String message) {
-        // Show an alert dialog or update a status label with the message
-        System.out.println(message); // Just as a placeholder, should be replaced with UI code
+        System.out.println(message);
     }
 
     private Scene buildGameRoomScene(GameRoom room) {
@@ -438,14 +412,14 @@ public class ClientUI extends Application {
 
         VBox scoreboardContainer = new VBox(10);
         Label scoreboardTitle = new Label("scoreboard:");
-        scoreboard = new VBox(10); // 10 is the spacing between elements
+        scoreboard = new VBox(10);
+        scoreboard = new VBox(10);
 
         scoreboard.setAlignment(Pos.CENTER);
         scoreboardContainer.getChildren().addAll(scoreboardTitle, scoreboard);
 
         Button sendMessageButton = new Button("Send");
         sendMessageButton.setOnAction(event -> {
-            // TODO: Implement send message action
             String message = chatInput.getText();
             try {
                 client.sendMessage("CHAT:ROOM-" + room.getName() + ":" + player.getName() + ":" + message);
@@ -471,7 +445,6 @@ public class ClientUI extends Application {
         playedCardsArea = new HBox(10);
         playedCardsArea.setPadding(new Insets(10));
         playedCardsArea.setAlignment(Pos.CENTER);
-        // Style the playedCardsArea if necessary
 
 
         chatArea.getChildren().addAll(chatMessages, chatInput, sendMessageButton, scoreboardContainer, confirmButton);
@@ -486,8 +459,8 @@ public class ClientUI extends Application {
         gameArea.getChildren().addAll(playedCardsArea, playerHandArea);
 
         // Layout Setup
-        borderPane.setCenter(gameArea); // Assuming gameArea is defined
-        borderPane.setRight(chatArea); // Assuming chatArea is defined
+        borderPane.setCenter(gameArea);
+        borderPane.setRight(chatArea);
 
         return new Scene(borderPane, GAMESCREEN_WIDTH, GAMESCREEN_HEIGHT);
     }
@@ -527,13 +500,11 @@ public class ClientUI extends Application {
     }
 
     private void updatePlayedCards(PlayedCardInfo cardInfo) {
-        // Assuming you have a way to get the list of played cards and the players who played them
         ImageView cardView = new ImageView(new Image(cardInfo.getCard().getImagePath()));
         cardView.setFitWidth(CARD_WIDTH);
         cardView.setPreserveRatio(true);
 
         Label playerNameLabel = new Label(cardInfo.getPlayer());
-        // Style the playerNameLabel if necessary
 
         VBox cardAndPlayer = new VBox(cardView, playerNameLabel);
         cardAndPlayer.setAlignment(Pos.CENTER);
@@ -605,12 +576,11 @@ public class ClientUI extends Application {
 
                 endScreenLayout.getChildren().addAll(winnerLabel, scoreLabel, exitButton);
 
-                Scene endScene = new Scene(endScreenLayout, 300, 200); // Adjust size as needed
+                Scene endScene = new Scene(endScreenLayout, 300, 200);
                 Platform.runLater(() -> {
                     window.setScene(endScene);
                 });
 
-                // Handle button actions
                 exitButton.setOnAction(e -> {
                     Platform.exit();
                 });

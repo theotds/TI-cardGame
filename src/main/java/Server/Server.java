@@ -33,16 +33,13 @@ public class Server {
             while (true) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    // Check for null socket (unlikely but safe to handle)
                     if (clientSocket != null) {
-                        // Create a CompletableFuture to handle the client asynchronously
                         clientHandlingPool.execute(() -> handleClient(clientSocket));
                     } else {
                         System.err.println("Accepted client socket is null");
                     }
                 } catch (IOException e) {
                     System.err.println("Error accepting client connection: " + e.getMessage());
-                    // Handle exception as needed (logging, retrying, etc.)
                 }
             }
 
@@ -53,11 +50,9 @@ public class Server {
     }
 
     private static void handleClient(Socket clientSocket) {
-        // Check if the client is connected
         if (clientSocket.isConnected()) {
             System.out.println("Client connected: " + clientSocket.getPort());
         }
-        // output is the writter to specific client that is connected
         PrintWriter output = null;
         try {
 
@@ -169,7 +164,6 @@ public class Server {
 
                 GameRoom room = gameRooms.get(roomName);
                 if (room != null) {
-                    // Broadcast the message to all players in the room
                     String sendMessage = "CHAT:" + roomName + ":" + nickName + ":" + chatMessage;
                     sendMessageToClient(sendMessage);
                 } else {
@@ -302,16 +296,13 @@ public class Server {
 
     private static void sendRoomsList() {
         synchronized (gameRooms) {
-            // Check if the list of rooms is empty
             if (gameRooms.isEmpty()) {
                 sendMessageToClient("EMPTY_LIST");
             } else {
-                // Iterate over each client and send them the list of rooms
                 for (PrintWriter clientWriter : clientWriters) {
                     clientWriter.println("START_LIST");
                     for (Map.Entry<String, GameRoom> entry : gameRooms.entrySet()) {
                         String roomName = entry.getKey();
-                        // Assuming GameRoom has methods to get details
                         GameRoom room = entry.getValue();
                         clientWriter.println("ROOM " + roomName);
                     }
@@ -326,8 +317,6 @@ public class Server {
         } else {
             System.out.println("List of Game Rooms:");
             for (String roomName : gameRooms.keySet()) {
-                // You can also retrieve the GameRoom object and display more details if needed.
-                // GameRoom room = appointmentEntries.get(roomName);
                 System.out.println(roomName);
             }
         }

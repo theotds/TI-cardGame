@@ -1,8 +1,5 @@
 package Game;
 
-import Game.Card;
-import com.kierki.client.Player;
-
 public class PlayedCardInfo {
     private final Card card;
     private final String playerName;

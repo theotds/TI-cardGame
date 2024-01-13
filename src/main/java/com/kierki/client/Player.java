@@ -64,7 +64,7 @@ public class Player {
 
             if (card.getRank() == rank && card.getSuit() == suit) {
                 iterator.remove();
-                break; // Remove only the first matching card
+                break;
             }
         }
     }
@@ -90,7 +90,7 @@ public class Player {
         while (iterator.hasNext()) {
             Card card = iterator.next();
             if (card.toString().equals(cardName)) {
-                iterator.remove(); // Remove the card from the hand
+                iterator.remove();
                 return card;
             }
         }
@@ -100,6 +100,4 @@ public class Player {
     public void addScore(int score) {
         this.score += score;
     }
-
-    // Additional methods related to player actions can be added here
 }
