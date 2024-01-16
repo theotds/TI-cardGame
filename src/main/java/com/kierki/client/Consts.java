@@ -13,6 +13,8 @@ public class Consts {
     public static int GAMESCREEN_HEIGHT = 600;
     public static int GAMEAREA_WIDTH = GAMESCREEN_WIDTH - CHAT_SIZE;
     public static int CARD_WIDTH = ((GAMEAREA_WIDTH) / 15);
+    public static int BUTTON_WIDTH = 120;
+    public static int BUTTON_HEIGHT = 40;
 
 
     //GAME

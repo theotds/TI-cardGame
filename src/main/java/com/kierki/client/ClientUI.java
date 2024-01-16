@@ -194,8 +194,8 @@ public class ClientUI extends Application {
         Button button = new Button(text);
         button.setDisable(isDisabled);
         button.setStyle("-fx-background-color: #ADD8E6; -fx-text-fill: black; -fx-font-size: 14px;");
-        button.setMinWidth(120);
-        button.setMinHeight(40);
+        button.setMinWidth(BUTTON_WIDTH);
+        button.setMinHeight(BUTTON_HEIGHT);
         return button;
     }
 
@@ -249,8 +249,7 @@ public class ClientUI extends Application {
     }
 
     private String readGameRules() {
-        String rulesPath = "C:/TI-java/kierki/src/main/java/rules.txt";
-        try (FileInputStream fileStream = new FileInputStream(rulesPath); BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.UTF_8))) {
+        try (FileInputStream fileStream = new FileInputStream(RULES_PATH); BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -503,6 +502,7 @@ public class ClientUI extends Application {
         cardView.setPreserveRatio(true);
 
         Label playerNameLabel = new Label(cardInfo.getPlayer());
+        playerNameLabel.setStyle("-fx-font-size: 28px;");
 
         VBox cardAndPlayer = new VBox(cardView, playerNameLabel);
         cardAndPlayer.setAlignment(Pos.CENTER);
